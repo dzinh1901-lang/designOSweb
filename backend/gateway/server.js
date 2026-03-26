@@ -219,13 +219,33 @@ function buildApp(redis) {
   app.use(`${API_PREFIX}/upload`,   uploadRoutes);
   app.use(`${API_PREFIX}/admin`,    adminRoutes);
 
+  // ── Static frontend serving ───────────────────────────
+  // Serve the webapp frontend (index.html, login.html, dashboard.html, etc.)
+  const frontendRoot = path.resolve(__dirname, '../../..');
+  app.use(express.static(frontendRoot, {
+    maxAge: process.env.NODE_ENV === 'production' ? '1h' : '0',
+    index: false, // handle root manually
+    extensions: ['html'],
+  }));
+
+  // Frontend routes
+  app.get('/', (req, res) => res.sendFile(path.join(frontendRoot, 'index.html')));
+  app.get('/login', (req, res) => res.sendFile(path.join(frontendRoot, 'login.html')));
+  app.get('/dashboard', (req, res) => res.sendFile(path.join(frontendRoot, 'dashboard.html')));
+  app.get('/signup', (req, res) => res.sendFile(path.join(frontendRoot, 'login.html')));
+
   // ── 404 handler ───────────────────────────────────────
   app.use((req, res) => {
-    res.status(404).json({
-      error:     'Endpoint not found',
-      path:      req.path,
-      requestId: req.requestId,
-    });
+    // If it looks like an API request, return JSON 404
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({
+        error:     'Endpoint not found',
+        path:      req.path,
+        requestId: req.requestId,
+      });
+    }
+    // Otherwise redirect to home
+    res.redirect('/');
   });
 
   // ── Global error handler ──────────────────────────────

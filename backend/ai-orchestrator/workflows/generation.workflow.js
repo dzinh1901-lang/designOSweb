@@ -1,6 +1,6 @@
 'use strict';
 // ══════════════════════════════════════════════════════════
-// DESIGNOS · Generation Workflow (LangGraph-inspired)
+// DESIGNOS v1.3.0 · Generation Workflow (LangGraph-inspired)
 //
 // Stateful multi-agent workflow engine.
 // Implements a directed graph of agent nodes with:
@@ -9,6 +9,8 @@
 //  - Parallel execution where possible
 //  - Checkpoint/resume for long-running jobs
 //  - Error recovery with fallback paths
+//  - Agentic autonomy hooks (v1.3.0): proactive param adaptation
+//    and autonomous prompt enrichment per Perceive→Reason→Act→Learn
 //
 // Graph topology per mode:
 //  DRAFT:      Director → Stylist → Keyframes → QA → Finalise
@@ -19,6 +21,7 @@
 // ══════════════════════════════════════════════════════════
 
 const logger = require('../../shared/utils/logger');
+const agenticAutonomy = require('../../services/agentic/agentic-autonomy.service');
 
 // Agent imports
 const directorAgent       = require('../agents/director.agent');
@@ -39,6 +42,15 @@ function init(deps = {}) {
   redisClient    = deps.redis      || null;
   qaService      = deps.qa         || null;
   storageService = deps.storage    || null;
+  // Wire Agentic Autonomy service with all available deps
+  agenticAutonomy.init({
+    qa:           deps.qa          || null,
+    queue:        deps.queue       || null,
+    cdn:          deps.cdn         || null,
+    renderRouter: deps.renderRouter|| null,
+    storage:      deps.storage     || null,
+    kling:        klingClient,
+  });
 }
 
 // ── Workflow state machine ─────────────────────────────────
@@ -76,13 +88,24 @@ async function run(jobPayload) {
   logger.info('Workflow started', { jobId, mode, complexity: ctx.complexity.score });
 
   try {
-    // Select and run pipeline based on mode
-    switch (mode) {
+    // ── Agentic: autonomously adapt job params before execution ──
+    const adaptedPayload = await agenticAutonomy.adaptJobParams(jobPayload);
+    if (adaptedPayload.mode !== mode) {
+      logger.info('Agentic autonomy rerouted job mode', {
+        jobId, original: mode, adapted: adaptedPayload.mode,
+        reasons: adaptedPayload._agentAdapted,
+      });
+      ctx.mode = adaptedPayload.mode;
+    }
+    ctx.metadata = { ...ctx.metadata, ...(adaptedPayload.jobSpec?.modelParams || {}) };
+
+    // Select and run pipeline based on (potentially adapted) mode
+    switch (ctx.mode) {
       case 'draft':       await runDraftPipeline(ctx);       break;
       case 'cinema':      await runCinemaPipeline(ctx);      break;
       case 'exploration': await runExplorationPipeline(ctx); break;
       default:
-        throw new Error(`Unknown render mode: ${mode}`);
+        throw new Error(`Unknown render mode: ${ctx.mode}`);
     }
 
     await updateJobStatus(jobId, 'complete', {
@@ -191,8 +214,18 @@ async function runCinemaPipeline(ctx) {
     metadata,
   });
 
+  // ── Agentic: autonomously enrich prompt with benchmark signals ──
+  const agentEnrichment = agenticAutonomy.enrichPromptAutonomously(
+    ctx.results.expansion?.enrichedPrompt || prompt,
+    ctx.results.director?.scene?.cinematic_profile || {}
+  );
+  if (agentEnrichment.appliedEnrichments.length > 0) {
+    logger.info('Agentic prompt enrichment applied', {
+      jobId, enrichments: agentEnrichment.appliedEnrichments });
+  }
+
   // Use enriched prompt downstream
-  const enrichedPrompt = ctx.results.expansion?.enrichedPrompt || prompt;
+  const enrichedPrompt = agentEnrichment.enrichedPrompt;
 
   // Stage 5: Keyframes (Flux.1 Pro)
   await setStage(ctx, STAGES.KEYFRAMES);

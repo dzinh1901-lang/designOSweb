@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DesignOS — Studio Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ── Dashboard Layout ── */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .dash-layout {
+      display: flex;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    /* Sidebar */
+    .dash-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .dash-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+      text-decoration: none;
+    }
+
+    .dash-logo .logo-glyph {
+      width: 26px; height: 26px;
+      color: var(--rose);
+    }
+
+    .dash-logo span {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .dash-nav {
+      flex: 1;
+      padding: 0 12px;
+    }
+
+    .dash-nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    .dash-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .dash-nav a:hover,
+    .dash-nav a.active {
+      background: rgba(240,144,144,0.08);
+      color: var(--text-primary);
+    }
+
+    .dash-nav a.active { color: var(--rose); }
+
+    .dash-nav a svg {
+      width: 15px; height: 15px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .dash-nav a:hover svg,
+    .dash-nav a.active svg { opacity: 1; }
+
+    .dash-sidebar-foot {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .dash-user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 7px;
+    }
+
+    .dash-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .dash-user-info { flex: 1; min-width: 0; }
+    .dash-user-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      truncate: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .dash-user-role {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .dash-logout {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .dash-logout:hover { color: var(--text-secondary); }
+
+    /* Main content */
+    .dash-main {
+      flex: 1;
+      margin-left: 220px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dash-topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .dash-topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .dash-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dash-credits {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .dash-credits strong { color: var(--rose); }
+
+    .dash-content {
+      flex: 1;
+      padding: 32px;
+      max-width: 1100px;
+    }
+
+    /* Welcome banner */
+    .dash-welcome {
+      background: linear-gradient(135deg, rgba(240,144,144,0.08), rgba(144,180,240,0.04));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dash-welcome::before {
+      content: '';
+      position: absolute;
+      right: -30px; top: -30px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,144,144,0.06), transparent);
+      pointer-events: none;
+    }
+
+    .dash-welcome h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0 0 6px;
+    }
+
+    .dash-welcome p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* Stats row */
+    .dash-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .dash-stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .dsc-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .dsc-val {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .dsc-val.rose { color: var(--rose); }
+
+    .dsc-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Quick actions */
+    .dash-actions-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    .dash-action-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .dash-action-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .dash-action-card:hover {
+      border-color: var(--rose);
+      transform: translateY(-1px);
+    }
+
+    .dac-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .dac-icon.maritime { background: rgba(120,180,255,0.1); color: rgba(120,180,255,0.9); }
+    .dac-icon.cre      { background: rgba(240,200,120,0.1); color: rgba(240,200,120,0.9); }
+    .dac-icon.luxury   { background: rgba(240,144,144,0.1); color: var(--rose); }
+
+    .dac-icon svg { width: 18px; height: 18px; }
+
+    .dac-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .dac-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Generate form */
+    .dash-generate-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+
+    .dgc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .dgc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .dgc-mode-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: rgba(240,144,144,0.1);
+      color: var(--rose);
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .dgc-prompt {
+      width: 100%;
+      min-height: 80px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .dgc-prompt:focus { border-color: var(--rose); }
+    .dgc-prompt::placeholder { color: var(--text-muted); }
+
+    .dgc-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: flex-end;
+    }
+
+    .dgc-select {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .dgc-generate-btn {
+      padding: 10px 24px;
+      background: var(--rose);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+
+    .dgc-generate-btn:hover { opacity: 0.9; }
+    .dgc-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Recent jobs */
+    .dash-jobs-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    .dash-jobs-empty {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px;
+      text-align: center;
+    }
+
+    .dje-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+
+    .dje-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Notification toast */
+    .dash-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text-primary);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      max-width: 320px;
+    }
+
+    .dash-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .dash-toast.success { border-color: rgba(76,175,125,0.4); }
+    .dash-toast.error { border-color: rgba(196,58,74,0.4); }
+
+    @media (max-width: 900px) {
+      .dash-stats { grid-template-columns: repeat(2, 1fr); }
+      .dash-action-cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .dash-sidebar { width: 0; overflow: hidden; }
+      .dash-main { margin-left: 0; }
+      .dash-stats { grid-template-columns: 1fr 1fr; }
+      .dash-action-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dash-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="dash-sidebar">
+      <a href="/index.html" class="dash-logo">
+        <div class="logo-glyph">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect x="4"  y="4"  width="11" height="11" rx="2.5" fill="currentColor"/>
+            <rect x="17" y="4"  width="11" height="11" rx="2.5" fill="currentColor" opacity="0.5"/>
+            <rect x="4"  y="17" width="11" height="11" rx="2.5" fill="currentColor" opacity="0.25"/>
+            <rect x="17" y="17" width="11" height="11" rx="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>DesignOS</span>
+      </a>
+
+      <nav class="dash-nav">
+        <div class="dash-nav-label">Studio</div>
+        <a href="/dashboard.html" class="active">
+          <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" onclick="showToast('Projects coming soon', 'info'); return false;">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V1.5A.5.5 0 0 1 5.5 1h5a.5.5 0 0 1 .5.5V3" stroke="currentColor" stroke-width="1.3"/></svg>
+          Projects
+        </a>
+        <a href="#" onclick="showToast('Archive coming soon', 'info'); return false;">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M1 6l2-4h10l2 4" stroke="currentColor" stroke-width="1.3"/><path d="M6 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Archive
+        </a>
+
+        <div class="dash-nav-label">Generate</div>
+        <a href="#generate" onclick="document.getElementById('dashPrompt').focus(); return false;">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 1L9.5 5.5H14L10.5 8.3L12 13L8 10.5L4 13L5.5 8.3L2 5.5H6.5L8 1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          New Generation
+        </a>
+        <a href="#" onclick="showToast('Presets library coming soon', 'info'); return false;">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="6" width="10" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="11" width="12" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+          Style Presets
+        </a>
+
+        <div class="dash-nav-label">Account</div>
+        <a href="#" onclick="showToast('Settings coming soon', 'info'); return false;">
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.46 3.46l1.41 1.41M11.13 11.13l1.41 1.41M3.46 12.54l1.41-1.41M11.13 4.87l1.41-1.41" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="dash-sidebar-foot">
+        <div class="dash-user-row">
+          <div class="dash-avatar" id="sidebarAvatar">A</div>
+          <div class="dash-user-info">
+            <div class="dash-user-name" id="sidebarName">User</div>
+            <div class="dash-user-role" id="sidebarRole">Free Tier</div>
+          </div>
+          <button class="dash-logout" onclick="handleLogout()" title="Sign out">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M6 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <div class="dash-main">
+
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="dash-topbar-title">Studio Dashboard</div>
+        <div class="dash-topbar-actions">
+          <div class="dash-credits">Credits: <strong id="topbarCredits">5.0</strong></div>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <a href="/login.html" class="btn-ghost" style="padding:6px 14px;font-size:12px;">Sign Out</a>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="dash-content">
+
+        <!-- Welcome banner -->
+        <div class="dash-welcome">
+          <h2 id="welcomeTitle">Welcome back, <em>Studio</em></h2>
+          <p>Generate broadcast-quality cinematic video for marine and real estate clients — powered by Kling 3.0.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="dash-stats">
+          <div class="dash-stat-card">
+            <div class="dsc-label">Credits Remaining</div>
+            <div class="dsc-val rose" id="statCredits">5.0</div>
+            <div class="dsc-sub">Cinema Mode: 1.0/job</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dsc-label">Projects</div>
+            <div class="dsc-val" id="statProjects">0</div>
+            <div class="dsc-sub">Active this month</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dsc-label">Generations</div>
+            <div class="dsc-val" id="statJobs">0</div>
+            <div class="dsc-sub">Total produced</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dsc-label">QA Score</div>
+            <div class="dsc-val">—</div>
+            <div class="dsc-sub">Avg output quality</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dash-actions-title">Quick Start</div>
+        <div class="dash-action-cards">
+          <a class="dash-action-card" href="#" onclick="setIndustry('maritime'); return false;">
+            <div class="dac-icon maritime">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M2 14s3-3 8-3 8 3 8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 11V4M7 7l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17c2 1 10 1 12 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dac-title">Maritime &amp; Superyacht</div>
+            <div class="dac-desc">Physics-accurate ocean rendering with maritime LoRA models</div>
+          </a>
+          <a class="dash-action-card" href="#" onclick="setIndustry('cre'); return false;">
+            <div class="dac-icon cre">
+              <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 19V14h6v5" stroke="currentColor" stroke-width="1.5"/><path d="M1 9L10 2L19 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dac-title">Commercial Real Estate</div>
+            <div class="dac-desc">Pre-sale campaigns and architectural visualisation at 8K HDR</div>
+          </a>
+          <a class="dash-action-card" href="#" onclick="setIndustry('luxury'); return false;">
+            <div class="dac-icon luxury">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="dac-title">Luxury Branding</div>
+            <div class="dac-desc">Editorial brand cinema and product visualisation campaigns</div>
+          </a>
+        </div>
+
+        <!-- Generation form -->
+        <div class="dash-generate-card" id="generate">
+          <div class="dgc-header">
+            <div class="dgc-title">New Generation</div>
+            <div class="dgc-mode-badge" id="modeBadge">Cinematic Mode</div>
+          </div>
+
+          <textarea
+            id="dashPrompt"
+            class="dgc-prompt"
+            placeholder="Describe your scene... e.g. 'luxury superyacht at golden hour, slow aerial orbit, warm amber ocean reflections, cinematic broadcast quality'"
+          ></textarea>
+
+          <div class="dgc-row">
+            <select class="dgc-select" id="dashMode">
+              <option value="cinema">Cinematic Mode (1.0 credit)</option>
+              <option value="draft">Draft Mode (0.1 credit)</option>
+              <option value="exploration">Exploration Mode (0.5 credit)</option>
+            </select>
+            <select class="dgc-select" id="dashIndustry">
+              <option value="maritime">Maritime</option>
+              <option value="commercial_real_estate">Commercial Real Estate</option>
+              <option value="luxury_branding">Luxury Branding</option>
+            </select>
+            <button class="dgc-generate-btn" id="dashGenerateBtn" onclick="handleGenerate()">
+              Generate → Kling 3.0
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent jobs -->
+        <div class="dash-jobs-title">Recent Generations</div>
+        <div class="dash-jobs-empty" id="jobsEmpty">
+          <div class="dje-icon">🎬</div>
+          <div class="dje-text">No generations yet — create your first cinematic video above.</div>
+          <a href="#generate" onclick="document.getElementById('dashPrompt').focus(); return false;" class="btn-rose" style="display:inline-block;padding:10px 20px;font-size:13px;text-decoration:none;">Start Generating →</a>
+        </div>
+
+        <div id="jobsList" style="display:none;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="dash-toast" id="dashToast"></div>
+
+  <script>
+    /* ── Theme engine ── */
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('dos-theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('dos-theme', next);
+    });
+
+    /* ── Auth check ── */
+    const token = sessionStorage.getItem('dos_access_token');
+    if (!token) {
+      window.location.href = '/login.html';
+    }
+
+    const API = '/api/v1';
+
+    /* ── Load user profile ── */
+    async function loadProfile() {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
+        });
+
+        if (res.status === 401) {
+          sessionStorage.removeItem('dos_access_token');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        if (res.ok) {
+          const { user } = await res.json();
+          if (user) {
+            const firstName = (user.name || '').split(' ')[0] || 'Studio';
+            const initials  = (user.name || 'U').split(' ').map(p => p[0]).join('').toUpperCase().slice(0,2);
+
+            document.getElementById('sidebarAvatar').textContent = initials;
+            document.getElementById('sidebarName').textContent   = user.name || user.email;
+            document.getElementById('sidebarRole').textContent   = (user.role || 'free').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+            document.getElementById('welcomeTitle').innerHTML    = `Welcome back, <em>${firstName}</em>`;
+            document.getElementById('topbarCredits').textContent = (user.credits || 0).toFixed(1);
+            document.getElementById('statCredits').textContent   = (user.credits || 0).toFixed(1);
+          }
+        }
+      } catch(e) {
+        console.warn('Profile load failed', e);
+      }
+    }
+
+    /* ── Load projects ── */
+    async function loadProjects() {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API}/projects?page=1&limit=10`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('statProjects').textContent = data.total || 0;
+        }
+      } catch(e) { /* non-critical */ }
+    }
+
+    /* ── Logout ── */
+    async function handleLogout() {
+      try {
+        await fetch(`${API}/auth/logout`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+      } catch(e) { /* ignore */ }
+      sessionStorage.removeItem('dos_access_token');
+      sessionStorage.removeItem('dos_user');
+      window.location.href = '/login.html';
+    }
+
+    /* ── Set industry preset in generator ── */
+    function setIndustry(industry) {
+      const sel = document.getElementById('dashIndustry');
+      const prompts = {
+        maritime: '"luxury superyacht 55m at golden hour, slow aerial orbit, warm amber ocean reflections, physics-accurate waves, cinematic broadcast quality"',
+        cre:      '"luxury penthouse terrace at golden hour, slow aerial crane reveal, warm amber city skyline, architectural grandeur, broadcast quality cinematic"',
+        luxury:   '"luxury brand hero shot at golden sunset, slow dolly reveal, premium finishes, warm amber key light, editorial cinematic quality"',
+      };
+      const map = { maritime: 'maritime', cre: 'commercial_real_estate', luxury: 'luxury_branding' };
+      if (sel) sel.value = map[industry] || 'maritime';
+      const ta = document.getElementById('dashPrompt');
+      if (ta) ta.value = prompts[industry] || '';
+      ta?.focus();
+    }
+
+    /* ── Generate ── */
+    async function handleGenerate() {
+      const prompt   = document.getElementById('dashPrompt')?.value?.trim();
+      const mode     = document.getElementById('dashMode')?.value;
+      const industry = document.getElementById('dashIndustry')?.value;
+      const btn      = document.getElementById('dashGenerateBtn');
+
+      if (!prompt) { showToast('Please enter a scene prompt first.', 'error'); return; }
+      if (!token)  { window.location.href = '/login.html'; return; }
+
+      btn.disabled    = true;
+      btn.textContent = 'Creating project...';
+
+      try {
+        // 1. Create a project first
+        const projRes = await fetch(`${API}/projects`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name: `${industry} — ${new Date().toLocaleDateString()}`, industry }),
+        });
+
+        if (!projRes.ok) {
+          const d = await projRes.json();
+          showToast(d.error || 'Failed to create project.', 'error');
+          return;
+        }
+
+        const projData = await projRes.json();
+        const projectId = projData.project?.id || projData.id;
+
+        btn.textContent = 'Queuing generation...';
+
+        // 2. Submit generation job
+        const genRes = await fetch(`${API}/generate`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            project_id: projectId,
+            prompt,
+            mode,
+            style_presets: [],
+            aspect_ratio: '16:9',
+            duration_seconds: 10,
+          }),
+        });
+
+        const genData = await genRes.json();
+
+        if (!genRes.ok) {
+          showToast(genData.error || 'Generation request failed.', 'error');
+          return;
+        }
+
+        showToast(`Generation queued — Job ID: ${genData.job?.id?.slice(0,8)}...`, 'success');
+        addJobToList(genData.job, prompt);
+        document.getElementById('dashPrompt').value = '';
+        document.getElementById('statJobs').textContent =
+          parseInt(document.getElementById('statJobs').textContent || '0') + 1;
+
+      } catch(err) {
+        showToast('Network error. Please try again.', 'error');
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Generate → Kling 3.0';
+      }
+    }
+
+    /* ── Add job to list ── */
+    function addJobToList(job, prompt) {
+      const list = document.getElementById('jobsList');
+      const empty = document.getElementById('jobsEmpty');
+      if (!list) return;
+
+      empty.style.display = 'none';
+      list.style.display  = 'block';
+
+      const card = document.createElement('div');
+      card.style.cssText = `
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      `;
+      card.innerHTML = `
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Job ${job?.id?.slice(0,8) || 'pending'}...</div>
+          <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${prompt}</div>
+        </div>
+        <div style="flex-shrink:0;font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(245,166,35,0.1);color:rgba(245,166,35,0.9);font-weight:500;">Queued</div>
+      `;
+      list.insertBefore(card, list.firstChild);
+    }
+
+    /* ── Mode badge updater ── */
+    document.getElementById('dashMode')?.addEventListener('change', function() {
+      const labels = { cinema: 'Cinematic Mode', draft: 'Draft Mode', exploration: 'Exploration Mode' };
+      const badge = document.getElementById('modeBadge');
+      if (badge) badge.textContent = labels[this.value] || 'Cinematic Mode';
+    });
+
+    /* ── Toast ── */
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('dashToast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.className   = `dash-toast ${type} show`;
+      setTimeout(() => { toast.className = `dash-toast ${type}`; }, 3500);
+    }
+
+    /* ── Init ── */
+    loadProfile();
+    loadProjects();
+  </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DesignOS — Sign In</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ── Login Page Overrides ── */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .login-page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 20%, rgba(240,144,144,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 80% 80%, rgba(144,180,240,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+      justify-content: center;
+    }
+
+    .login-brand .logo-glyph {
+      width: 32px; height: 32px;
+      color: var(--rose);
+    }
+
+    .login-brand span {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+    }
+
+    .login-card-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-card-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0 0 8px;
+    }
+
+    .login-card-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .login-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .login-tab {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .login-tab.active {
+      background: var(--surface);
+      color: var(--text-primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .login-form { display: none; }
+    .login-form.active { display: block; }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(240,144,144,0.15);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--rose);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.02em;
+      position: relative;
+    }
+
+    .login-btn:hover { opacity: 0.92; }
+    .login-btn:active { transform: scale(0.99); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .login-btn .btn-spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    .login-btn.loading .btn-text { display: none; }
+    .login-btn.loading .btn-spinner { display: inline-block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .login-forgot {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+
+    .login-forgot a {
+      font-size: 12px;
+      color: var(--rose);
+      text-decoration: none;
+    }
+
+    .login-forgot a:hover { opacity: 0.8; }
+
+    .login-error {
+      background: rgba(196,58,74,0.12);
+      border: 1px solid rgba(196,58,74,0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #e06070;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .login-success {
+      background: rgba(76,175,125,0.12);
+      border: 1px solid rgba(76,175,125,0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #4caf7d;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .login-footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+
+    .login-footer-note a {
+      color: var(--rose);
+      text-decoration: none;
+    }
+
+    .login-back {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .login-back a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-back a:hover { color: var(--text-secondary); }
+
+    .login-industries {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .lind-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .lind-badge.maritime { border-color: rgba(120,180,255,0.3); color: rgba(120,180,255,0.8); }
+    .lind-badge.cre { border-color: rgba(240,200,120,0.3); color: rgba(240,200,120,0.8); }
+    .lind-badge.luxury { border-color: rgba(240,144,144,0.3); color: rgba(240,144,144,0.8); }
+
+    /* Password strength */
+    .pw-strength {
+      margin-top: 6px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .pw-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .pw-bar.filled.weak   { background: #c43a4a; }
+    .pw-bar.filled.medium { background: #f5a623; }
+    .pw-bar.filled.strong { background: #4caf7d; }
+
+    .pw-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 40px;
+    }
+
+    /* Theme toggle inline */
+    .login-theme-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas class="login-canvas" id="loginCanvas"></canvas>
+
+  <main class="login-page">
+    <div class="login-wrap">
+
+      <!-- Brand -->
+      <div class="login-brand">
+        <div class="logo-glyph">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect x="4"  y="4"  width="11" height="11" rx="2.5" fill="currentColor"/>
+            <rect x="17" y="4"  width="11" height="11" rx="2.5" fill="currentColor" opacity="0.5"/>
+            <rect x="4"  y="17" width="11" height="11" rx="2.5" fill="currentColor" opacity="0.25"/>
+            <rect x="17" y="17" width="11" height="11" rx="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>DesignOS</span>
+      </div>
+
+      <!-- Theme toggle -->
+      <div class="login-theme-row">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+
+      <!-- Login card -->
+      <div class="login-card">
+
+        <div class="login-card-header">
+          <h1>Welcome Back</h1>
+          <p>Marine · Real Estate · Luxury Branding</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="login-tabs">
+          <button class="login-tab active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+          <button class="login-tab" id="tabRegister" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- Error / Success messages -->
+        <div class="login-error" id="loginError"></div>
+        <div class="login-success" id="loginSuccess"></div>
+
+        <!-- Sign In Form -->
+        <form class="login-form active" id="formSignIn" onsubmit="handleSignIn(event)">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="siEmail" placeholder="you@studio.com" required autocomplete="email"/>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="siPassword" placeholder="••••••••••••" required autocomplete="current-password"/>
+          </div>
+
+          <div class="login-forgot">
+            <a href="#" onclick="showForgotPassword(event)">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="login-btn" id="btnSignIn">
+            <span class="btn-text">Sign In →</span>
+            <span class="btn-spinner"></span>
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form class="login-form" id="formRegister" onsubmit="handleRegister(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="regFirst" placeholder="Alex" required autocomplete="given-name"/>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" id="regLast" placeholder="Morgan" required autocomplete="family-name"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="you@studio.com" required autocomplete="email"/>
+          </div>
+
+          <div class="form-group">
+            <label>Organisation <span style="font-weight:300;text-transform:none;">(optional)</span></label>
+            <input type="text" id="regOrg" placeholder="Bluebird Marine Studio" autocomplete="organization"/>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="••••••••••••" required
+                   autocomplete="new-password" oninput="checkPasswordStrength(this.value)"/>
+            <div class="pw-strength">
+              <div class="pw-bar" id="pwBar1"></div>
+              <div class="pw-bar" id="pwBar2"></div>
+              <div class="pw-bar" id="pwBar3"></div>
+              <div class="pw-bar" id="pwBar4"></div>
+              <span class="pw-label" id="pwLabel"></span>
+            </div>
+            <div class="form-hint">Min 12 chars · uppercase · number · symbol</div>
+          </div>
+
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="regConfirm" placeholder="••••••••••••" required autocomplete="new-password"/>
+          </div>
+
+          <button type="submit" class="login-btn" id="btnRegister">
+            <span class="btn-text">Create Account →</span>
+            <span class="btn-spinner"></span>
+          </button>
+
+          <p class="login-footer-note" style="margin-top:14px;">
+            By registering you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </p>
+        </form>
+
+        <!-- Forgot Password Form (hidden by default) -->
+        <form class="login-form" id="formForgot" onsubmit="handleForgot(event)">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:18px;">
+            Enter your email and we'll send a reset link if your account exists.
+          </p>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="fgEmail" placeholder="you@studio.com" required autocomplete="email"/>
+          </div>
+          <button type="submit" class="login-btn" id="btnForgot">
+            <span class="btn-text">Send Reset Link →</span>
+            <span class="btn-spinner"></span>
+          </button>
+          <div class="login-forgot" style="text-align:center;margin-top:14px;">
+            <a href="#" onclick="switchTab('signin')">← Back to Sign In</a>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- Industry badges -->
+      <div class="login-industries">
+        <div class="lind-badge maritime">Maritime &amp; Superyacht</div>
+        <div class="lind-badge cre">Commercial Real Estate</div>
+        <div class="lind-badge luxury">Luxury Branding</div>
+      </div>
+
+      <!-- Back link -->
+      <div class="login-back">
+        <a href="/index.html">← Back to DesignOS</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    /* ── Theme engine ── */
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('dos-theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('dos-theme', next);
+    });
+
+    /* ── Background particle canvas (lightweight) ── */
+    (function() {
+      const canvas = document.getElementById('loginCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      const dots = Array.from({ length: 40 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        r: Math.random() * 1.2 + 0.3,
+        a: Math.random() * 0.18 + 0.04,
+        rose: Math.random() > 0.65,
+      }));
+
+      (function loop() {
+        ctx.clearRect(0, 0, W, H);
+        const dark = html.getAttribute('data-theme') !== 'light';
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          const c = d.rose
+            ? (dark ? '240,144,144' : '200,100,100')
+            : (dark ? '140,190,240' : '100,140,200');
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${c},${d.a})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    /* ── Tab switching ── */
+    function switchTab(tab) {
+      document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+      clearMessages();
+
+      if (tab === 'signin') {
+        document.getElementById('formSignIn').classList.add('active');
+        document.getElementById('tabSignIn').classList.add('active');
+      } else if (tab === 'register') {
+        document.getElementById('formRegister').classList.add('active');
+        document.getElementById('tabRegister').classList.add('active');
+      } else if (tab === 'forgot') {
+        document.getElementById('formForgot').classList.add('active');
+      }
+    }
+
+    function showForgotPassword(e) {
+      e.preventDefault();
+      switchTab('forgot');
+    }
+
+    function clearMessages() {
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('loginSuccess').style.display = 'none';
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('loginError');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('loginSuccess').style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('loginSuccess');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.classList.toggle('loading', loading);
+    }
+
+    /* ── Password strength checker ── */
+    function checkPasswordStrength(pw) {
+      const bars = [
+        document.getElementById('pwBar1'),
+        document.getElementById('pwBar2'),
+        document.getElementById('pwBar3'),
+        document.getElementById('pwBar4'),
+      ];
+      const label = document.getElementById('pwLabel');
+
+      let score = 0;
+      if (pw.length >= 8)  score++;
+      if (pw.length >= 12) score++;
+      if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+      if (/\d/.test(pw) && /[@$!%*?&]/.test(pw)) score++;
+
+      const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      const cls    = ['', 'weak', 'medium', 'medium', 'strong'];
+
+      bars.forEach((b, i) => {
+        b.className = 'pw-bar';
+        if (i < score) b.classList.add('filled', cls[score]);
+      });
+      label.textContent = score > 0 ? levels[score] : '';
+    }
+
+    /* ── API base URL ── */
+    const API = '/api/v1';
+
+    /* ── Sign In handler ── */
+    async function handleSignIn(e) {
+      e.preventDefault();
+      clearMessages();
+      const email    = document.getElementById('siEmail').value.trim();
+      const password = document.getElementById('siPassword').value;
+
+      if (!email || !password) { showError('Email and password are required.'); return; }
+
+      setLoading('btnSignIn', true);
+      try {
+        const res = await fetch(`${API}/auth/login`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || data.message || 'Sign in failed. Please check your credentials.');
+          return;
+        }
+
+        // Store access token
+        sessionStorage.setItem('dos_access_token', data.accessToken);
+        sessionStorage.setItem('dos_user', JSON.stringify(data.user || {}));
+
+        showSuccess('Signed in successfully — redirecting to Studio...');
+        setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);
+
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+      } finally {
+        setLoading('btnSignIn', false);
+      }
+    }
+
+    /* ── Register handler ── */
+    async function handleRegister(e) {
+      e.preventDefault();
+      clearMessages();
+
+      const firstName = document.getElementById('regFirst').value.trim();
+      const lastName  = document.getElementById('regLast').value.trim();
+      const email     = document.getElementById('regEmail').value.trim();
+      const org       = document.getElementById('regOrg').value.trim();
+      const password  = document.getElementById('regPassword').value;
+      const confirm   = document.getElementById('regConfirm').value;
+      const name      = `${firstName} ${lastName}`.trim();
+
+      if (password !== confirm) { showError('Passwords do not match.'); return; }
+      if (password.length < 12) { showError('Password must be at least 12 characters.'); return; }
+
+      setLoading('btnRegister', true);
+      try {
+        const res = await fetch(`${API}/auth/register`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password, name, organization: org || undefined }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || data.message || 'Registration failed. Please try again.');
+          return;
+        }
+
+        sessionStorage.setItem('dos_access_token', data.accessToken);
+        showSuccess('Account created! Redirecting to Studio...');
+        setTimeout(() => { window.location.href = '/dashboard.html'; }, 1400);
+
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+      } finally {
+        setLoading('btnRegister', false);
+      }
+    }
+
+    /* ── Forgot Password handler ── */
+    async function handleForgot(e) {
+      e.preventDefault();
+      clearMessages();
+
+      const email = document.getElementById('fgEmail').value.trim();
+      if (!email) { showError('Please enter your email address.'); return; }
+
+      setLoading('btnForgot', true);
+      try {
+        const res = await fetch(`${API}/auth/password/reset-request`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        // Always success to prevent user enumeration
+        showSuccess('If that email is registered, a reset link has been sent. Check your inbox.');
+        document.getElementById('fgEmail').value = '';
+
+      } catch (err) {
+        showError('Network error. Please try again.');
+      } finally {
+        setLoading('btnForgot', false);
+      }
+    }
+
+    /* ── Handle hash-based tab switching ── */
+    (function handleHash() {
+      if (window.location.hash === '#register') {
+        switchTab('register');
+      }
+    })();
+
+    /* ── Check if already logged in ── */
+    (function checkAuth() {
+      const token = sessionStorage.getItem('dos_access_token');
+      if (token) {
+        // Optionally verify token and redirect
+        fetch(`${API}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
+        }).then(r => {
+          if (r.ok) window.location.href = '/dashboard.html';
+        }).catch(() => {
+          sessionStorage.removeItem('dos_access_token');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
