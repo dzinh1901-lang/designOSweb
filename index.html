@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DesignOS — Autonomous Cinematic Generation Engine</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-glyph">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect x="4"  y="4"  width="11" height="11" rx="2.5" fill="currentColor"/>
+            <rect x="17" y="4"  width="11" height="11" rx="2.5" fill="currentColor" opacity="0.5"/>
+            <rect x="4"  y="17" width="11" height="11" rx="2.5" fill="currentColor" opacity="0.25"/>
+            <rect x="17" y="17" width="11" height="11" rx="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>DesignOS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#stack">Model Stack</a></li>
+        <li><a href="#pipeline">Pipeline</a></li>
+        <li><a href="#agents">Agents</a></li>
+        <li><a href="#industries">Industries</a></li>
+        <li><a href="#benchmark">Benchmark</a></li>
+        <li><a href="#composer">Composer</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="#" class="btn-ghost">Sign In</a>
+        <a href="#" class="btn-rose">Request Access</a>
+      </div>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero" id="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-noise"></div>
+    <div class="hero-vignette"></div>
+
+    <div class="hero-inner">
+      <!-- LEFT -->
+      <div class="hero-content">
+        <div class="hero-version-pill">
+          <span class="vp-dot"></span>
+          v1.1.0 · AI-Native · No CAD Required
+        </div>
+
+        <h1 class="hero-title">
+          Prompt.<br/>
+          <em>Generate.</em><br/>
+          Distribute.
+        </h1>
+
+        <p class="hero-desc">
+          DesignOS is an <strong>Autonomous Cinematic Generation Engine</strong> — transforming structured prompts and reference images into photorealistic, broadcast-quality video. Powered by Kling 3.0 and Genspark AI.
+        </p>
+
+        <div class="hero-cta-row">
+          <a href="#pipeline" class="btn-rose large">See the Pipeline <span class="arr">→</span></a>
+          <a href="#stack" class="btn-outline large">Model Stack</a>
+        </div>
+
+        <div class="hero-badges">
+          <div class="h-badge">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1L10 6H15L11 9L13 14L8 11L3 14L5 9L1 6H6L8 1Z" fill="currentColor"/></svg>
+            Kling 3.0 Powered
+          </div>
+          <div class="h-badge genspark">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8C5 6.3 6.3 5 8 5C9.7 5 11 6.3 11 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="2" fill="currentColor" opacity="0.5"/></svg>
+            Genspark AI Creative Layer
+          </div>
+          <div class="h-badge neutral">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor" opacity="0.5"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor" opacity="0.3"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
+            Multi-Agent Orchestration
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — live generation window -->
+      <div class="hero-visual">
+        <div class="gen-window">
+          <div class="gw-bar">
+            <div class="gw-dots"><span class="d r"></span><span class="d y"></span><span class="d g"></span></div>
+            <span class="gw-title">DesignOS · Cinema Engine · Generating</span>
+            <span class="gw-live"><span class="gw-pulse"></span> Live</span>
+          </div>
+
+          <!-- Prompt input simulation -->
+          <div class="gw-prompt-area">
+            <div class="gw-prompt-label">Scene Prompt</div>
+            <div class="gw-prompt-text" id="promptText"></div>
+            <span class="gw-cursor" id="promptCursor">|</span>
+          </div>
+
+          <!-- Generation stages -->
+          <div class="gw-stages">
+            <div class="gw-stage done" id="stage1">
+              <span class="gs-icon">✓</span>
+              <span class="gs-label">Scene Understanding</span>
+              <span class="gs-model">SAM 2 + DINO</span>
+            </div>
+            <div class="gw-stage done" id="stage2">
+              <span class="gs-icon">✓</span>
+              <span class="gs-label">Concept Structuring</span>
+              <span class="gs-model">Claude 3.5 Sonnet</span>
+            </div>
+            <div class="gw-stage active" id="stage3">
+              <span class="gs-icon spin">⟳</span>
+              <span class="gs-label">Keyframe Generation</span>
+              <span class="gs-model">Flux.1 / SDXL</span>
+            </div>
+            <div class="gw-stage idle" id="stage4">
+              <span class="gs-icon">◌</span>
+              <span class="gs-label">Video Synthesis</span>
+              <span class="gs-model gs-kling">Kling 3.0 API</span>
+            </div>
+            <div class="gw-stage idle" id="stage5">
+              <span class="gs-icon">◌</span>
+              <span class="gs-label">Creative Expansion</span>
+              <span class="gs-model gs-genspark">Genspark AI</span>
+            </div>
+            <div class="gw-stage idle" id="stage6">
+              <span class="gs-icon">◌</span>
+              <span class="gs-label">Post-Production</span>
+              <span class="gs-model">LUTs + Audio + Grade</span>
+            </div>
+          </div>
+
+          <div class="gw-footer">
+            <div class="gw-progress-bar"><div class="gw-fill" id="gwFill"></div></div>
+            <div class="gw-meta">
+              <span class="gw-mode">
+                <span class="mode-dot"></span>
+                Cinematic Mode
+              </span>
+              <span id="gwEta">ETA 0:38</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating stat cards -->
+        <div class="fc fc-tl">
+          <div class="fc-icon-wrap">
+            <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10L14 15L9 12L4 15L6 10L2 7H7L9 2Z" fill="currentColor"/></svg>
+          </div>
+          <div>
+            <div class="fc-label">Render Mode</div>
+            <div class="fc-val">Cinema Grade</div>
+          </div>
+        </div>
+        <div class="fc fc-br">
+          <div class="fc-icon-wrap">
+            <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M6 9C6 7.3 7.3 6 9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9" r="2" fill="currentColor" opacity="0.4"/></svg>
+          </div>
+          <div>
+            <div class="fc-label">Agents Running</div>
+            <div class="fc-val">5 / 5 Active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-strip">
+    <div class="ticker-inner">
+      <span>Autonomous Generation</span><b>✦</b>
+      <span>Kling 3.0 Video Engine</span><b>✦</b>
+      <span>Genspark AI Creative Layer</span><b>✦</b>
+      <span>No CAD Required</span><b>✦</b>
+      <span>Flux.1 Keyframes</span><b>✦</b>
+      <span>Claude 3.5 Scene Logic</span><b>✦</b>
+      <span>Multi-Agent Orchestration</span><b>✦</b>
+      <span>CLIP-Score Validation</span><b>✦</b>
+      <span>Temporal.io Workflows</span><b>✦</b>
+      <span>Real-ESRGAN Upscaling</span><b>✦</b>
+      <span>Suno v4 + ElevenLabs Audio</span><b>✦</b>
+      <span>Autonomous Generation</span><b>✦</b>
+      <span>Kling 3.0 Video Engine</span><b>✦</b>
+      <span>Genspark AI Creative Layer</span><b>✦</b>
+      <span>No CAD Required</span><b>✦</b>
+      <span>Flux.1 Keyframes</span><b>✦</b>
+      <span>Claude 3.5 Scene Logic</span><b>✦</b>
+      <span>Multi-Agent Orchestration</span><b>✦</b>
+      <span>CLIP-Score Validation</span><b>✦</b>
+      <span>Temporal.io Workflows</span><b>✦</b>
+      <span>Real-ESRGAN Upscaling</span><b>✦</b>
+      <span>Suno v4 + ElevenLabs Audio</span><b>✦</b>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ POSITIONING ═══════════════════════════ -->
+  <section class="section positioning" id="positioning">
+    <div class="container">
+      <div class="pos-grid">
+        <div class="pos-old reveal">
+          <div class="pos-tag old-tag">Before</div>
+          <h3>"AI Rendering Tool"</h3>
+          <ul>
+            <li>CAD-dependent workflow</li>
+            <li>Geometry parsing pipeline</li>
+            <li>Rendering as a utility</li>
+            <li>Manual material assignment</li>
+            <li>Output: static frames</li>
+          </ul>
+        </div>
+        <div class="pos-arrow reveal" data-delay="150">
+          <div class="pa-line"></div>
+          <div class="pa-head">→</div>
+        </div>
+        <div class="pos-new reveal" data-delay="300">
+          <div class="pos-tag new-tag">Now</div>
+          <h3>"Autonomous Cinematic<br/>Generation Engine"</h3>
+          <ul>
+            <li>Fully prompt-driven system</li>
+            <li>AI-native scene understanding</li>
+            <li>Cinematic-first architecture</li>
+            <li>Generative material + lighting AI</li>
+            <li>Output: broadcast-quality video</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ MODEL STACK ═══════════════════════════ -->
+  <section class="section stack-sec" id="stack">
+    <div class="container">
+      <div class="section-header centered">
+        <div class="sec-tag">AI Model Stack · v1.1</div>
+        <h2 class="sec-title">Every Stage.<br/><em>Best-in-Class Model.</em></h2>
+        <p class="sec-desc centered-p">DesignOS routes each generation stage to the optimal model — with Kling 3.0 as the primary cinematic video engine and Genspark AI powering the creative expansion layer.</p>
+      </div>
+
+      <div class="stack-table">
+        <div class="st-head">
+          <span>Stage</span>
+          <span>Model</span>
+          <span>Purpose</span>
+          <span>Mode</span>
+        </div>
+
+        <div class="st-row reveal" data-delay="0">
+          <span class="st-stage">Vision Understanding</span>
+          <span class="st-model">SAM 2 + Grounded DINO</span>
+          <span class="st-desc">Scene parsing from reference images and prompt context</span>
+          <span class="st-mode all">All Modes</span>
+        </div>
+        <div class="st-row reveal" data-delay="60">
+          <span class="st-stage">NLP Structuring</span>
+          <span class="st-model">Claude 3.5 Sonnet</span>
+          <span class="st-desc">Converts natural prompts into structured scene logic JSON</span>
+          <span class="st-mode all">All Modes</span>
+        </div>
+        <div class="st-row reveal" data-delay="120">
+          <span class="st-stage">Image Generation</span>
+          <span class="st-model">Flux.1 / SDXL</span>
+          <span class="st-desc">High-fidelity cinematic keyframe generation</span>
+          <span class="st-mode cinema">Cinema + Draft</span>
+        </div>
+        <div class="st-row st-row-highlight reveal" data-delay="180">
+          <span class="st-stage">
+            <span class="st-primary-badge">Core Engine</span>
+            Video Generation
+          </span>
+          <span class="st-model st-kling">
+            <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 1L8.8 5.5H13.5L9.8 8.2L11.1 13L7 10.5L2.9 13L4.2 8.2L0.5 5.5H5.2L7 1Z"/></svg>
+            Kling 3.0 API
+          </span>
+          <span class="st-desc">Primary cinematic video engine — temporal consistency, camera motion (orbit, dolly, FPV), 8K output</span>
+          <span class="st-mode cinema">Cinematic Mode</span>
+        </div>
+        <div class="st-row st-row-genspark reveal" data-delay="240">
+          <span class="st-stage">
+            <span class="st-primary-badge genspark-badge">Creative Layer</span>
+            Creative Expansion
+          </span>
+          <span class="st-model st-genspark">
+            <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7C4.5 5.6 5.6 4.5 7 4.5C8.4 4.5 9.5 5.6 9.5 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="7" r="1.5" fill="currentColor" opacity="0.5"/></svg>
+            Genspark AI
+          </span>
+          <span class="st-desc">Style remixing, alternative concepts, rapid ideation branches, creative direction expansion</span>
+          <span class="st-mode explore">Exploration Mode</span>
+        </div>
+        <div class="st-row reveal" data-delay="300">
+          <span class="st-stage">Upscaling</span>
+          <span class="st-model">Real-ESRGAN / Magnific</span>
+          <span class="st-desc">Ultra-real output enhancement — texture, detail, resolution fidelity</span>
+          <span class="st-mode cinema">Cinema + Pro</span>
+        </div>
+        <div class="st-row reveal" data-delay="360">
+          <span class="st-stage">Audio</span>
+          <span class="st-model">Suno v4 + ElevenLabs</span>
+          <span class="st-desc">Cinematic soundtrack generation + professional narration voiceover</span>
+          <span class="st-mode all">All Modes</span>
+        </div>
+      </div>
+
+      <!-- Render Router -->
+      <div class="router-card reveal" data-delay="100">
+        <div class="rc-header">
+          <div class="rc-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="1.5"/><path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div>
+            <div class="rc-label">Intelligent Render Router</div>
+            <h3>Three Modes. One Decision Engine.</h3>
+          </div>
+        </div>
+        <div class="rc-modes">
+          <div class="rc-mode draft">
+            <div class="rcm-header">
+              <span class="rcm-dot"></span>
+              <span class="rcm-name">Draft Mode</span>
+            </div>
+            <div class="rcm-model">SDXL</div>
+            <div class="rcm-desc">Fast previews, rapid iteration, concept exploration</div>
+          </div>
+          <div class="rc-arrow">→</div>
+          <div class="rc-mode cinema">
+            <div class="rcm-header">
+              <span class="rcm-dot"></span>
+              <span class="rcm-name">Cinematic Mode</span>
+            </div>
+            <div class="rcm-model">Flux.1 + Kling 3.0</div>
+            <div class="rcm-desc">Broadcast-quality output, full camera motion, 8K HDR</div>
+          </div>
+          <div class="rc-arrow">→</div>
+          <div class="rc-mode explore">
+            <div class="rcm-header">
+              <span class="rcm-dot"></span>
+              <span class="rcm-name">Exploration Mode</span>
+            </div>
+            <div class="rcm-model">Genspark AI</div>
+            <div class="rcm-desc">Multiple creative directions, style variations, concept branches</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PIPELINE ═══════════════════════════ -->
+  <section class="section pipeline-sec" id="pipeline">
+    <div class="container">
+      <div class="section-header">
+        <div class="sec-tag">7-Stage AI Pipeline</div>
+        <h2 class="sec-title">Prompt In.<br/><em>Cinema Out.</em></h2>
+        <p class="sec-desc">Every stage is autonomous. Every model is purpose-selected. From a text prompt to a broadcast-quality cinematic video — no manual intervention required.</p>
+      </div>
+
+      <div class="pipeline-flow">
+
+        <div class="pf-item reveal-left" data-delay="0">
+          <div class="pf-num">01</div>
+          <div class="pf-card">
+            <div class="pf-top">
+              <div class="pf-icon-box">
+                <svg viewBox="0 0 28 28" fill="none"><path d="M6 8h16M6 12h12M6 16h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="3" y="4" width="22" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label">Input Stage</div>
+                <h3>Prompt + References</h3>
+              </div>
+            </div>
+            <p>User provides a text prompt, optional reference images, and style presets — luxury, cinematic, maritime, coastal. No CAD files, no geometry. Pure creative intent.</p>
+            <div class="pf-inputs">
+              <span>Text Prompt</span><span>Reference Images</span><span>Style Presets</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item reveal-left" data-delay="80">
+          <div class="pf-num">02</div>
+          <div class="pf-card">
+            <div class="pf-top">
+              <div class="pf-icon-box">
+                <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M10 14C10 11.8 11.8 10 14 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="currentColor" opacity="0.4"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label">Scene Understanding · SAM 2 + Grounded DINO</div>
+                <h3>Vision + NLP Analysis</h3>
+              </div>
+            </div>
+            <p>Vision models extract objects, environment context, and style intent from reference images. NLP models parse the prompt to identify spatial relationships, mood, and cinematic style.</p>
+            <div class="pf-inputs">
+              <span>Object Detection</span><span>Environment Context</span><span>Style Intent</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item reveal-left" data-delay="160">
+          <div class="pf-num">03</div>
+          <div class="pf-card">
+            <div class="pf-top">
+              <div class="pf-icon-box">
+                <svg viewBox="0 0 28 28" fill="none"><rect x="4" y="6" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M9 11h10M9 15h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label">Concept Agent · Claude 3.5 Sonnet</div>
+                <h3>Scene Structuring</h3>
+              </div>
+            </div>
+            <p>Claude 3.5 Sonnet converts natural language and vision analysis into a structured Scene Logic JSON — defining spatial layout, camera paths, lighting environment, and material palette.</p>
+            <div class="pf-code-block">
+              <div class="pcb-header"><span class="pcb-dot"></span> scene_logic.json</div>
+              <pre>{
+  "scene": "luxury superyacht at dusk",
+  "camera_path": "slow aerial orbit",
+  "lighting": "golden hour HDRI",
+  "materials": [
+    "polished teak wood",
+    "brushed stainless steel",
+    "tempered glass"
+  ],
+  "mood": "cinematic luxury"
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item reveal-left" data-delay="240">
+          <div class="pf-num">04</div>
+          <div class="pf-card">
+            <div class="pf-top">
+              <div class="pf-icon-box">
+                <svg viewBox="0 0 28 28" fill="none"><rect x="4" y="4" width="20" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="5" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="currentColor" opacity="0.4"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label">Keyframe Engine · Flux.1 / SDXL</div>
+                <h3>Cinematic Keyframes</h3>
+              </div>
+            </div>
+            <p>Diffusion models generate high-fidelity cinematic keyframes from the structured scene JSON. Multi-angle consistency maintained across all frames to ensure coherent video generation downstream.</p>
+            <div class="pf-inputs">
+              <span>Multi-angle Frames</span><span>Style Consistency</span><span>8K Output</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item pf-highlight reveal-left" data-delay="320">
+          <div class="pf-num kling-num">05</div>
+          <div class="pf-card pf-card-kling">
+            <div class="pf-kling-badge">Core Video Engine</div>
+            <div class="pf-top">
+              <div class="pf-icon-box kling-icon">
+                <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L17 10H25L19 15L21 23L14 18L7 23L9 15L3 10H11L14 2Z" fill="currentColor" opacity="0.8"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label kling-label">Video Synthesis · Kling 3.0 API</div>
+                <h3>Cinematic Video Generation</h3>
+              </div>
+            </div>
+            <p>Keyframes and scene prompts are sent to <strong>Kling 3.0 API</strong> — generating temporally-consistent cinematic video clips with full camera motion control: orbital shots, dolly moves, FPV sequences, and tracking shots.</p>
+            <div class="pf-inputs kling-inputs">
+              <span>Temporal Consistency</span><span>Orbital / Dolly / FPV</span><span>8K HDR Video</span><span>Camera Physics</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item pf-genspark reveal-left" data-delay="400">
+          <div class="pf-num genspark-num">06</div>
+          <div class="pf-card pf-card-genspark">
+            <div class="pf-genspark-badge">Creative Expansion Layer</div>
+            <div class="pf-top">
+              <div class="pf-icon-box genspark-icon">
+                <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="currentColor" stroke-width="1.5"/><path d="M9 14C9 11.2 11.2 9 14 9C16.8 9 19 11.2 19 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="currentColor" opacity="0.5"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label genspark-label">Creative Layer · Genspark AI</div>
+                <h3>Variations + Expansion</h3>
+              </div>
+            </div>
+            <p><strong>Genspark AI</strong> generates parallel creative branches from the core scene — style remixes, alternative concepts, and rapid ideation variations. Resolve prompt ambiguity by generating structured alternatives automatically.</p>
+            <div class="pf-inputs genspark-inputs">
+              <span>Style Remixing</span><span>Alternative Concepts</span><span>Ideation Branches</span><span>Prompt Disambiguation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-connector reveal"></div>
+
+        <div class="pf-item reveal-left" data-delay="480">
+          <div class="pf-num">07</div>
+          <div class="pf-card">
+            <div class="pf-top">
+              <div class="pf-icon-box">
+                <svg viewBox="0 0 28 28" fill="none"><path d="M14 3L24 9V19L14 25L4 19V9L14 3Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 3V25M4 9L24 19M24 9L4 19" stroke="currentColor" stroke-width="1" opacity="0.2"/></svg>
+              </div>
+              <div>
+                <div class="pf-stage-label">Post-Production + Delivery</div>
+                <h3>Finish + Distribute</h3>
+              </div>
+            </div>
+            <p>LUT color grading, motion blur, depth-of-field simulation. Suno v4 soundtrack generation + ElevenLabs narration. Branded overlays applied. Output to video, web, social, and broadcast formats simultaneously.</p>
+            <div class="pf-inputs">
+              <span>LUT + Color Grade</span><span>Suno v4 Audio</span><span>ElevenLabs VO</span><span>Multi-format Export</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ AGENTS ═══════════════════════════ -->
+  <section class="section agents-sec" id="agents">
+    <div class="container">
+      <div class="section-header centered">
+        <div class="sec-tag">Multi-Agent System · Temporal.io</div>
+        <h2 class="sec-title">Five Agents.<br/><em>One Cinematic Studio.</em></h2>
+        <p class="sec-desc centered-p">DesignOS operates as an Autonomous Cinematic Studio — not a tool. Each agent specializes in one domain, hands off structured data, and runs in parallel on Temporal.io orchestration.</p>
+      </div>
+
+      <div class="agents-grid">
+
+        <div class="agent-card reveal" data-delay="0">
+          <div class="agent-number">01</div>
+          <div class="agent-avatar av-director">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M11 16L16 11L21 16M16 11V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="agent-role">Director Agent</div>
+          <h3>The Director</h3>
+          <p>Defines shot composition, camera motion strategy, and scene pacing. Converts Scene Logic JSON into a full shot list — hero shots, establishing sequences, and detail passes.</p>
+          <div class="agent-io">
+            <div class="aio-in"><span>IN</span> Scene JSON</div>
+            <div class="aio-arrow">→</div>
+            <div class="aio-out"><span>OUT</span> Shot List</div>
+          </div>
+        </div>
+
+        <div class="agent-card reveal" data-delay="100">
+          <div class="agent-number">02</div>
+          <div class="agent-avatar av-cinematographer">
+            <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="10" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M24 14L28 11V21L24 18" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="14" cy="17" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="agent-role">Cinematographer Agent</div>
+          <h3>The Cinematographer</h3>
+          <p>Generates precise camera paths — orbit, dolly, FPV — with lens simulation and motion physics. Camera data is fed directly into Kling 3.0 for physically accurate movement.</p>
+          <div class="agent-io">
+            <div class="aio-in"><span>IN</span> Shot List</div>
+            <div class="aio-arrow">→</div>
+            <div class="aio-out"><span>OUT</span> Camera Paths → Kling 3.0</div>
+          </div>
+        </div>
+
+        <div class="agent-card reveal" data-delay="200">
+          <div class="agent-number">03</div>
+          <div class="agent-avatar av-stylist">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4L28 10V22L16 28L4 22V10L16 4Z" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="4" fill="currentColor" opacity="0.3"/><path d="M16 4V28M4 10L28 22M28 10L4 22" stroke="currentColor" stroke-width="1" opacity="0.2"/></svg>
+          </div>
+          <div class="agent-role">Visual Stylist Agent</div>
+          <h3>The Visual Stylist</h3>
+          <p>Controls lighting environments (HDRI selection, golden hour, overcast, neon), material properties (luxury finishes, ocean reflections, architectural surfaces), and color palette definition.</p>
+          <div class="agent-io">
+            <div class="aio-in"><span>IN</span> Scene JSON</div>
+            <div class="aio-arrow">→</div>
+            <div class="aio-out"><span>OUT</span> HDRI + Material Config</div>
+          </div>
+        </div>
+
+        <div class="agent-card agent-genspark reveal" data-delay="300">
+          <div class="agent-number">04</div>
+          <div class="agent-badge-new">NEW · v1.1</div>
+          <div class="agent-avatar av-genspark">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M10 16C10 12.7 12.7 10 16 10C19.3 10 22 12.7 22 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="currentColor" opacity="0.5"/></svg>
+          </div>
+          <div class="agent-role genspark-role">Creative Expansion Agent · Genspark AI</div>
+          <h3>The Creative Expander</h3>
+          <p>Powered by <strong>Genspark AI</strong> — generates parallel creative directions from every scene. Style remixes, alternative concepts, rapid ideation branches. Resolves prompt ambiguity with structured alternatives.</p>
+          <div class="agent-io">
+            <div class="aio-in"><span>IN</span> Scene Brief</div>
+            <div class="aio-arrow">→</div>
+            <div class="aio-out genspark-out"><span>OUT</span> N Creative Variations</div>
+          </div>
+        </div>
+
+        <div class="agent-card reveal" data-delay="400">
+          <div class="agent-number">05</div>
+          <div class="agent-avatar av-editor">
+            <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 12H28M10 6V12M22 6V12" stroke="currentColor" stroke-width="1" opacity="0.4"/><path d="M9 18H23M9 22H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="agent-role">Post-Production Agent</div>
+          <h3>The Editor</h3>
+          <p>Compiles final clips, matches color grading and style consistency across all scenes. Manages HITL review flags for 1-click scene regeneration. Handles final branded output assembly and format export.</p>
+          <div class="agent-io">
+            <div class="aio-in"><span>IN</span> Rendered Clips</div>
+            <div class="aio-arrow">→</div>
+            <div class="aio-out"><span>OUT</span> Branded Final Video</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ QA SYSTEM ═══════════════════════════ -->
+  <section class="section qa-sec" id="qa">
+    <div class="container">
+      <div class="qa-inner">
+        <div class="qa-left">
+          <div class="sec-tag">Auto-QA System</div>
+          <h2 class="sec-title">Four Layers<br/><em>of Validation.</em></h2>
+          <p class="sec-desc">Every generation passes through a 4-layer quality control system before reaching the client — with Human-in-the-Loop controls for final creative oversight.</p>
+
+          <div class="qa-checks">
+            <div class="qa-check reveal">
+              <div class="qac-num">01</div>
+              <div>
+                <h4>Semantic Consistency</h4>
+                <p>CLIP-based scoring validates generated output against the original prompt intent. Flags scenes that deviate from the creative brief.</p>
+              </div>
+            </div>
+            <div class="qa-check reveal" data-delay="100">
+              <div class="qac-num">02</div>
+              <div>
+                <h4>Temporal Stability</h4>
+                <p>Optical flow analysis across all frames. Detects flickering, warping, and frame inconsistency before the clip reaches post-production.</p>
+              </div>
+            </div>
+            <div class="qa-check reveal" data-delay="200">
+              <div class="qac-num">03</div>
+              <div>
+                <h4>Style Consistency</h4>
+                <p>Embedding similarity scoring across frames. Prevents visual drift between scenes and ensures cohesive aesthetic across multi-scene productions.</p>
+              </div>
+            </div>
+            <div class="qa-check reveal" data-delay="300">
+              <div class="qac-num">04</div>
+              <div>
+                <h4>Human-in-the-Loop (HITL)</h4>
+                <p>Scene-level regeneration with adjustable camera, lighting, and style parameters. One click triggers a targeted re-render with Kling 3.0 or a Genspark AI creative variation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-right reveal" data-delay="200">
+          <div class="qa-score-card">
+            <div class="qsc-header">
+              <span class="qsc-title">QA Report · Scene 04</span>
+              <span class="qsc-pass">PASSED</span>
+            </div>
+            <div class="qsc-metrics">
+              <div class="qsc-metric">
+                <span class="qscm-label">Semantic Score</span>
+                <div class="qscm-bar"><div class="qscm-fill" style="width:92%"></div></div>
+                <span class="qscm-val">92%</span>
+              </div>
+              <div class="qsc-metric">
+                <span class="qscm-label">Temporal Stability</span>
+                <div class="qscm-bar"><div class="qscm-fill" style="width:97%"></div></div>
+                <span class="qscm-val">97%</span>
+              </div>
+              <div class="qsc-metric">
+                <span class="qscm-label">Style Consistency</span>
+                <div class="qscm-bar"><div class="qscm-fill" style="width:88%"></div></div>
+                <span class="qscm-val">88%</span>
+              </div>
+            </div>
+            <div class="qsc-hitl">
+              <div class="qsc-flag">
+                <span class="qsc-flag-icon">⚑</span>
+                Scene 02 flagged for HITL
+              </div>
+              <button class="qsc-regen">1-click Regenerate → Kling 3.0</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ INDUSTRIES ═══════════════════════════ -->
+  <section class="section industries-sec" id="industries">
+    <div class="container">
+      <div class="section-header centered">
+        <div class="sec-tag">Target Industries · v1.1</div>
+        <h2 class="sec-title">Three Worlds.<br/><em>One Engine.</em></h2>
+      </div>
+      <div class="ind-grid">
+
+        <div class="ind-card reveal" data-delay="0">
+          <div class="ind-num">01</div>
+          <div class="ind-badge cre">Commercial Real Estate</div>
+          <h3>Architectural<br/>Visualization</h3>
+          <p>Generate photorealistic property video from a brief and reference images. Pre-sale campaigns, investor decks, and marketing content — produced before ground breaks.</p>
+          <ul class="ind-list">
+            <li>High-rise towers & mixed-use developments</li>
+            <li>Interior visualization at 8K HDR</li>
+            <li>Pre-sale marketing video at scale</li>
+            <li>Multiple style variations via Genspark AI</li>
+          </ul>
+        </div>
+
+        <div class="ind-card reveal" data-delay="100">
+          <div class="ind-num">02</div>
+          <div class="ind-badge maritime">Maritime & Superyacht</div>
+          <h3>Vessel<br/>Visualization</h3>
+          <p>Physics-accurate ocean environments with specialized LoRA models for marine surfaces. Domain-specific reflection tuning prevents the "jelly-water" artifacts common in generic models.</p>
+          <ul class="ind-list">
+            <li>Superyacht & vessel walkthroughs</li>
+            <li>Physics-accurate ocean rendering</li>
+            <li>Marine Grade material library</li>
+            <li>Harbor & open-sea environments</li>
+          </ul>
+        </div>
+
+        <div class="ind-card reveal" data-delay="200">
+          <div class="ind-num">03</div>
+          <div class="ind-badge luxury">Luxury Branding</div>
+          <h3>Brand<br/>Cinema</h3>
+          <p>Cinematic brand content generated from creative briefs. Product visualization, lifestyle campaigns, and editorial video — at a fraction of traditional production cost and time.</p>
+          <ul class="ind-list">
+            <li>Product & lifestyle visual campaigns</li>
+            <li>Editorial cinematography at scale</li>
+            <li>Style exploration via Genspark AI</li>
+            <li>Broadcast-quality in hours, not weeks</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PLATFORM ═══════════════════════════ -->
+  <section class="section platform-sec" id="platform">
+    <div class="container">
+      <div class="platform-wrap">
+        <div class="pw-left">
+          <div class="sec-tag">Platform · Bluebird v1.5</div>
+          <h2 class="sec-title">The Studio<br/><em>Workstation.</em></h2>
+          <p class="sec-desc">The Bluebird portal is the operational front-end — an editorial obsidian interface designed for professionals who demand speed, precision, and cinematic output.</p>
+
+          <div class="pw-features">
+            <div class="pwf reveal">
+              <div class="pwf-dot"></div>
+              <div>
+                <h4>Dynamic Theme Engine</h4>
+                <p>Obsidian default for editorial impact. Warm Cream light mode for daytime workflows. Persistent via LocalStorage.</p>
+              </div>
+            </div>
+            <div class="pwf reveal" data-delay="80">
+              <div class="pwf-dot"></div>
+              <div>
+                <h4>Intelligent Drop Zone</h4>
+                <p>Multipart handler for reference images and style assets. Gemini 2.5 Flash begins analysis immediately on upload.</p>
+              </div>
+            </div>
+            <div class="pwf reveal" data-delay="160">
+              <div class="pwf-dot"></div>
+              <div>
+                <h4>Live Generation Dashboard</h4>
+                <p>Real-time Firestore onSnapshot listeners surface render status, agent progress, QA scores, and credit balance — always live, never stale.</p>
+              </div>
+            </div>
+            <div class="pwf reveal" data-delay="240">
+              <div class="pwf-dot"></div>
+              <div>
+                <h4>Notification Guard</h4>
+                <p>Dual-layer alerts — Native Browser Notifications + In-app Toasts — for render completion, QA flags, and HITL review requests.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pw-tech">
+            <div class="pwt-item"><span>Firebase v11.6.1</span></div>
+            <div class="pwt-item"><span>Temporal.io</span></div>
+            <div class="pwt-item"><span>Kubernetes GPU</span></div>
+            <div class="pwt-item"><span>Kafka Queue</span></div>
+            <div class="pwt-item"><span>Pinecone Vector</span></div>
+            <div class="pwt-item"><span>S3 + CloudFront</span></div>
+          </div>
+        </div>
+
+        <div class="pw-right reveal" data-delay="100">
+          <div class="workstation-ui">
+            <div class="wui-bar">
+              <div class="wui-dots"><span></span><span></span><span></span></div>
+              <span class="wui-title">Bluebird · Studio Agent · Obsidian</span>
+              <div class="wui-version">v1.5</div>
+            </div>
+            <div class="wui-body">
+              <div class="wui-sidebar">
+                <div class="wsi active">
+                  <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 1L9 5.5H14L10 8L11.5 13L7 10.5L2.5 13L4 8L0 5.5H5L7 1Z"/></svg>
+                  <span>Vision</span>
+                </div>
+                <div class="wsi">
+                  <svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+                  <span>Projects</span>
+                </div>
+                <div class="wsi">
+                  <svg viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v2H2V2zm0 3h10v2H2V5zm0 3h7v2H2V8z"/></svg>
+                  <span>Archive</span>
+                </div>
+                <div class="wsi-sep"></div>
+                <div class="wsi highlight">
+                  <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 7C5 5.9 5.9 5 7 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="7" r="2" fill="currentColor" opacity="0.5"/></svg>
+                  <span>Studio Agent</span>
+                </div>
+              </div>
+              <div class="wui-main">
+                <div class="wui-prompt-input">
+                  <div class="wpi-label">New Generation</div>
+                  <div class="wpi-box">"luxury penthouse terrace at golden hour, aerial establishing shot, cinematic..."</div>
+                  <div class="wpi-actions">
+                    <select class="wpi-mode">
+                      <option>Cinematic Mode</option>
+                      <option>Draft Mode</option>
+                      <option>Exploration Mode</option>
+                    </select>
+                    <button class="wpi-generate">Generate →</button>
+                  </div>
+                </div>
+                <div class="wui-active">
+                  <div class="wua-label">Active · Kling 3.0</div>
+                  <div class="wua-stages">
+                    <div class="wua-s done">✓ Director</div>
+                    <div class="wua-s done">✓ Cinematographer</div>
+                    <div class="wua-s active">⟳ Visual Stylist</div>
+                    <div class="wua-s wait">◌ Creative Expander</div>
+                    <div class="wua-s wait">◌ Post Editor</div>
+                  </div>
+                  <div class="wua-bar"><div class="wua-fill"></div></div>
+                  <div class="wua-credit"><span class="credit-val">1.0 Token</span> · Cinema Grade · Flux + Kling 3.0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ BENCHMARK ═══════════════════════════ -->
+  <section class="section benchmark-sec" id="benchmark">
+    <div class="container">
+      <div class="section-header centered">
+        <div class="sec-tag">Quality Standard · Benchmark Analysis</div>
+        <h2 class="sec-title">Calibrated to<br/><em>Production Reality.</em></h2>
+        <p class="sec-desc-center">Every DesignOS generation is calibrated against a verified Kling 3.0 production benchmark — 6 frame analysis, 10-point quality scoring, 8 cinematic signals.</p>
+      </div>
+
+      <div class="bm-layout">
+        <!-- Left: Frame strip -->
+        <div class="bm-frames">
+          <div class="bm-frame-label">Benchmark · 6 Key Frames · 15.04s · 24fps · 1176×784</div>
+          <div class="bm-strip" id="bmStrip">
+            <div class="bm-frame active" data-frame="0" data-score="8.5" data-shot="ECU Portrait" data-lut="Tungsten Warm 3200K">
+              <img src="/upload_files/seq_01.jpg" alt="Frame 1 — ECU Portrait"/>
+              <div class="bm-frame-badge">8.5 <span>seq_01</span></div>
+            </div>
+            <div class="bm-frame" data-frame="1" data-score="8.0" data-shot="MCU Gesture" data-lut="Candlelight Film 3000K">
+              <img src="/upload_files/seq_04.jpg" alt="Frame 2 — MCU Gesture"/>
+              <div class="bm-frame-badge">8.0 <span>seq_04</span></div>
+            </div>
+            <div class="bm-frame" data-frame="2" data-score="7.5" data-shot="Abstract VFX Insert" data-lut="Candlelight Film 2800K">
+              <img src="/upload_files/seq_07.jpg" alt="Frame 3 — Abstract VFX"/>
+              <div class="bm-frame-badge">7.5 <span>seq_07</span></div>
+            </div>
+            <div class="bm-frame" data-frame="3" data-score="8.0" data-shot="CU Hand Insert VFX" data-lut="Candlelight Film 3000K">
+              <img src="/upload_files/seq_10.jpg" alt="Frame 4 — Hand VFX"/>
+              <div class="bm-frame-badge">8.0 <span>seq_10</span></div>
+            </div>
+            <div class="bm-frame" data-frame="4" data-score="8.5" data-shot="MS Panel Triptych" data-lut="Tungsten Warm 3200K">
+              <img src="/upload_files/seq_13.jpg" alt="Frame 5 — Panel Triptych"/>
+              <div class="bm-frame-badge">8.5 <span>seq_13</span></div>
+            </div>
+            <div class="bm-frame" data-frame="5" data-score="9.0" data-shot="MLS God Rays Reveal" data-lut="Sacred Volumetric">
+              <img src="/upload_files/seq_15.jpg" alt="Frame 6 — God Rays"/>
+              <div class="bm-frame-badge top">9.0 <span>seq_15</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Analysis panel -->
+        <div class="bm-analysis" id="bmAnalysis">
+          <div class="bma-header">
+            <div class="bma-shot-label" id="bmaShot">ECU Portrait · seq_01</div>
+            <div class="bma-score" id="bmaScore">
+              <span class="bmas-num" id="bmScoreNum">8.5</span>
+              <span class="bmas-label">/10</span>
+            </div>
+          </div>
+
+          <div class="bma-lut-row">
+            <div class="bma-lut-swatch" id="bmaLutSwatch" style="background: linear-gradient(90deg, #C47A3A, #E8A882, #F5DEC0)"></div>
+            <div class="bma-lut-info">
+              <div class="bma-lut-name" id="bmaLutName">DOS_TungstenWarm_v1</div>
+              <div class="bma-lut-temp" id="bmaLutTemp">3200K Warm Amber · Teal-Orange Grade</div>
+            </div>
+          </div>
+
+          <div class="bma-signals">
+            <div class="bma-sig-title">Quality Signals</div>
+            <div class="bma-sig-list" id="bmaSigList">
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Subsurface Scattering (SSS)</span><span class="sig-w">×0.20</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Hair Strand Rim Separation</span><span class="sig-w">×0.15</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Volumetric Atmosphere</span><span class="sig-w">×0.18</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Teardrop Catchlight</span><span class="sig-w">×0.10</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Narrative Coherence</span><span class="sig-w">×0.15</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Color Grade Consistency</span><span class="sig-w">×0.10</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Camera Motion Smoothness</span><span class="sig-w">×0.07</span></div>
+              <div class="bma-sig active"><div class="sig-dot"></div><span>Temporal Stability</span><span class="sig-w">×0.05</span></div>
+            </div>
+          </div>
+
+          <div class="bma-tech">
+            <div class="bma-tech-row"><span>Resolution</span><strong>1176 × 784 (3:2)</strong></div>
+            <div class="bma-tech-row"><span>Frame Rate</span><strong>24 fps</strong></div>
+            <div class="bma-tech-row"><span>Duration</span><strong>15.04s · 361 frames</strong></div>
+            <div class="bma-tech-row"><span>Bitrate</span><strong>6.46 Mbps H.264</strong></div>
+            <div class="bma-tech-row"><span>DOF</span><strong id="bmaDof">f/1.4 · 85mm · Extreme Shallow</strong></div>
+            <div class="bma-tech-row"><span>Composite</span><strong>8.5 / 10 · Auto-Approve ✓</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Industry Application Cards -->
+      <div class="bm-industry-apply">
+        <div class="bm-ia-title">Benchmark Applications by Industry</div>
+        <div class="bm-ia-grid">
+          <div class="bm-ia-card cre reveal">
+            <div class="bm-ia-num">seq_15</div>
+            <div class="bm-ia-score">9.0/10</div>
+            <h4>God Ray Reveal</h4>
+            <p>Sacred volumetric light shafts with dust particles — maps directly to luxury penthouse interior reveals, gallery spaces, superyacht salons.</p>
+            <div class="bm-ia-tag">DOS_SacredVolumetric_v1</div>
+          </div>
+          <div class="bm-ia-card maritime reveal" data-delay="100">
+            <div class="bm-ia-num">seq_13</div>
+            <div class="bm-ia-score">8.5/10</div>
+            <h4>Triptych Panel</h4>
+            <p>Self-illuminated floating panels — yacht interior configurator, bespoke material selection, luxury showroom product display.</p>
+            <div class="bm-ia-tag">DOS_TungstenWarm_v1</div>
+          </div>
+          <div class="bm-ia-card luxury reveal" data-delay="200">
+            <div class="bm-ia-num">seq_01</div>
+            <div class="bm-ia-score">8.5/10</div>
+            <h4>SSS Portrait</h4>
+            <p>Extreme close-up with SSS skin, golden rim light, f/1.4 bokeh — perfume, jewellery, fashion brand hero talent shots.</p>
+            <div class="bm-ia-tag">DOS_TungstenWarm_v1 · SSS ON</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PROMPT COMPOSER ═══════════════════════════ -->
+  <section class="section composer-sec" id="composer">
+    <div class="container">
+      <div class="section-header centered">
+        <div class="sec-tag">Prompt Composer · Benchmark-Calibrated</div>
+        <h2 class="sec-title">From Brief<br/><em>to Kling 3.0.</em></h2>
+        <p class="sec-desc-center">Select an industry preset — the system builds a benchmark-quality Kling 3.0 prompt automatically, optimised for your specific visual goal.</p>
+      </div>
+
+      <div class="composer-wrap">
+        <!-- Industry selector -->
+        <div class="comp-industries">
+          <button class="comp-ind-btn active" data-industry="commercial_real_estate">
+            <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 19V14h6v5" stroke="currentColor" stroke-width="1.5"/><path d="M1 9L10 2L19 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Commercial Real Estate
+          </button>
+          <button class="comp-ind-btn" data-industry="maritime">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M2 14s3-3 8-3 8 3 8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 11V4M7 7l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17c2 1 10 1 12 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Maritime
+          </button>
+          <button class="comp-ind-btn" data-industry="luxury_branding">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            Luxury Branding
+          </button>
+        </div>
+
+        <!-- Preset cards -->
+        <div class="comp-presets" id="compPresets">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Prompt output -->
+        <div class="comp-output">
+          <div class="comp-out-header">
+            <div class="comp-out-label">Generated Kling 3.0 System Prompt</div>
+            <div class="comp-out-meta" id="compMeta">Preset: Penthouse Golden Hour · Mode: Cinema · 3 shots × 5s</div>
+          </div>
+          <div class="comp-prompt-box" id="compPromptBox">
+            <div class="cpb-shot-label">Shot 01 / 03 — XWS Crane Up</div>
+            <div class="cpb-prompt" id="compPromptText">Slow crane upward reveal luxury high-rise tower, golden hour city skyline, warm amber light 3200K, deep focus f/8, architectural grandeur, volumetric atmosphere, no people, photorealistic, cinematic broadcast quality...</div>
+            <div class="cpb-params">
+              <span class="cpm-tag">DOS_SacredVolumetric_v1</span>
+              <span class="cpm-tag">3200K</span>
+              <span class="cpm-tag">f/8 Deep Focus</span>
+              <span class="cpm-tag">Crane Up</span>
+              <span class="cpm-tag">God Rays ON</span>
+              <span class="cpm-tag">Quality Target: 8.5</span>
+            </div>
+          </div>
+
+          <!-- Quality preview -->
+          <div class="comp-quality">
+            <div class="cq-signals" id="cqSignals">
+              <div class="cq-sig on" title="Subsurface Scattering">SSS</div>
+              <div class="cq-sig off" title="Hair Strand Detail">Hair</div>
+              <div class="cq-sig on" title="Volumetric Light">Vol</div>
+              <div class="cq-sig on" title="God Rays">God Rays</div>
+              <div class="cq-sig off" title="Maritime Reflections">Maritime</div>
+              <div class="cq-sig on" title="Dust Particles">Dust</div>
+            </div>
+            <div class="cq-score">
+              <div class="cqs-label">Predicted Score</div>
+              <div class="cqs-val" id="cqScoreVal">8.2</div>
+              <div class="cqs-bar"><div class="cqs-fill" id="cqScoreFill" style="width:82%"></div></div>
+            </div>
+          </div>
+
+          <div class="comp-actions">
+            <button class="comp-copy" id="compCopy">Copy Prompt</button>
+            <a href="#" class="btn-rose">Generate Now →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FINAL CTA ═══════════════════════════ -->
+  <section class="cta-section">
+    <div class="cta-bg">
+      <div class="cta-orb o1"></div>
+      <div class="cta-orb o2"></div>
+      <div class="cta-orb o3"></div>
+    </div>
+    <div class="container">
+      <div class="cta-inner">
+        <div class="sec-tag cta-tag">Get Started · v1.1.0</div>
+        <h2 class="cta-title">
+          Stop Rendering.<br/>
+          <em>Start Generating.</em>
+        </h2>
+        <p class="cta-desc">Join studios and firms already using DesignOS to produce cinematic-quality visual content — autonomously, at scale, powered by Kling 3.0 and Genspark AI.</p>
+        <div class="cta-actions">
+          <a href="#" class="btn-rose large">Request Early Access <span class="arr">→</span></a>
+          <a href="#" class="btn-ghost large">Read the Docs</a>
+        </div>
+        <div class="cta-powered">
+          <span>Powered by</span>
+          <span class="cp-kling">Kling 3.0</span>
+          <span class="cp-sep">+</span>
+          <span class="cp-genspark">Genspark AI</span>
+        </div>
+        <div class="cta-brand">2026 Bluebird. Powered By DesignOS.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a href="#" class="logo">
+            <div class="logo-glyph small">
+              <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="11" height="11" rx="2.5" fill="currentColor"/><rect x="17" y="4" width="11" height="11" rx="2.5" fill="currentColor" opacity="0.5"/><rect x="4" y="17" width="11" height="11" rx="2.5" fill="currentColor" opacity="0.25"/><rect x="17" y="17" width="11" height="11" rx="2.5" fill="currentColor"/></svg>
+            </div>
+            <span>DesignOS</span>
+          </a>
+          <p>Autonomous Cinematic Generation Engine for commercial real estate, maritime, and luxury branding.</p>
+          <div class="foot-ver">v1.1.0 · Powered by Kling 3.0 + Genspark AI</div>
+        </div>
+        <div class="foot-nav">
+          <div class="fn-col">
+            <h5>Platform</h5>
+            <a href="#">Model Stack</a>
+            <a href="#">Pipeline</a>
+            <a href="#">AI Agents</a>
+            <a href="#">Quality Control</a>
+          </div>
+          <div class="fn-col">
+            <h5>Industries</h5>
+            <a href="#">Real Estate</a>
+            <a href="#">Maritime</a>
+            <a href="#">Luxury Branding</a>
+            <a href="#">Case Studies</a>
+          </div>
+          <div class="fn-col">
+            <h5>Integrations</h5>
+            <a href="#">Kling 3.0 API</a>
+            <a href="#">Genspark AI</a>
+            <a href="#">Firebase SDK</a>
+            <a href="#">Webhooks</a>
+          </div>
+          <div class="fn-col">
+            <h5>Company</h5>
+            <a href="#">About Bluebird</a>
+            <a href="#">Careers</a>
+            <a href="#">Press</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>2026 Bluebird. Powered By DesignOS.</span>
+        <div class="foot-legal">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Security · SOC 2</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

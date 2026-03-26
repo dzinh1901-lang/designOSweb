@@ -1,0 +1,40 @@
+# ══════════════════════════════════════════════════════════
+# DESIGNOS · FastAPI AI Orchestrator — Production Dockerfile
+# ══════════════════════════════════════════════════════════
+
+FROM python:3.12-slim AS base
+WORKDIR /app
+
+# System deps (OpenCV for optical flow, libgl for image processing)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 \
+    wget curl dumb-init \
+  && rm -rf /var/lib/apt/lists/*
+
+# ── Stage: Dependencies ────────────────────────────────────
+FROM base AS deps
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ── Stage: Runtime ─────────────────────────────────────────
+FROM base AS runtime
+
+# Security: non-root user
+RUN useradd -m -u 1001 designos
+
+COPY --from=deps /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=deps /usr/local/bin /usr/local/bin
+
+COPY ai-orchestrator/ ./
+
+RUN mkdir -p /app/logs && chown -R designos:designos /app
+USER designos
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+  CMD curl -sf http://localhost:8001/health || exit 1
+
+EXPOSE 8001
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2", "--log-level", "info"]
