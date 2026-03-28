@@ -45,6 +45,7 @@ const projectRoutes  = require('./routes/projects.routes');
 const generateRoutes = require('./routes/generate.routes');
 const adminRoutes    = require('./routes/admin.routes');
 const uploadRoutes   = require('./routes/upload.routes');
+const chibiRoutes    = require('./routes/chibi.routes');
 
 const { API_PREFIX, HEALTH_PATH } = require('../config/constants');
 
@@ -213,6 +214,10 @@ function buildApp(redis) {
   }
 
   // ── API Routes ────────────────────────────────────────
+  // New app-facing routes (migration target)
+  app.use('/api', chibiRoutes);
+
+  // Legacy API v1 routes (backward compatibility during migration)
   app.use(`${API_PREFIX}/auth`,     authRoutes);
   app.use(`${API_PREFIX}/projects`, projectRoutes);
   app.use(`${API_PREFIX}/generate`, generateRoutes);
