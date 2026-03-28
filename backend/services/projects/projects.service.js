@@ -257,6 +257,48 @@ async function retryJob({ jobId, userId }) {
   return { jobId, status: JOB_STATUS.QUEUED, retryCount: updates.retryCount };
 }
 
+
+// ── List user gallery ─────────────────────────────────────
+async function listUserGallery({ userId, page = 1, limit = 24 }) {
+  const query = firestoreDb.collection('jobs').where('userId', '==', userId)
+    .orderBy('createdAt', 'desc')
+    .limit(limit)
+    .offset((page - 1) * limit);
+
+  const snap = await query.get();
+  const total = (await firestoreDb.collection('jobs').where('userId', '==', userId).count().get()).data().count;
+
+  const items = snap.docs.map((doc) => {
+    const job = sanitiseJob(doc.data());
+    return {
+      jobId: job.id,
+      projectId: job.projectId,
+      status: job.status,
+      coverUrl: Array.isArray(job.outputUrls) && job.outputUrls.length ? job.outputUrls[0] : null,
+      createdAt: job.createdAt?.toDate ? job.createdAt.toDate().toISOString() : new Date(job.createdAt).toISOString(),
+    };
+  });
+
+  return { items, page, limit, total };
+}
+
+// ── Save character preset ─────────────────────────────────
+async function saveCharacter({ userId, name, avatarUrl, baseJobId, profile }) {
+  const characterId = uuidv4();
+  await firestoreDb.collection('characters').doc(characterId).set({
+    id: characterId,
+    userId,
+    name,
+    avatarUrl: avatarUrl || null,
+    baseJobId: baseJobId || null,
+    profile,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  return characterId;
+}
+
 // ── Strip encrypted / internal fields from API response ──
 function sanitiseJob(job) {
   const { promptText, styleNotes, jobSpec: { modelParams, ...jobSpecSafe } = {}, ...rest } = job;
@@ -266,4 +308,5 @@ function sanitiseJob(job) {
 module.exports = {
   init, createProject, listProjects, getProject, updateProject, deleteProject,
   createGenerationJob, getJobStatus, submitHITLReview, listJobs, retryJob,
+  listUserGallery, saveCharacter,
 };
