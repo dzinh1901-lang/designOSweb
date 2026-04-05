@@ -16,6 +16,17 @@ module.exports = Object.freeze({
     EXPLORATION: 'exploration',
   },
 
+  // ── Coordinator Task States ───────────────────────────────
+  TASK_STATUS: {
+    PENDING:   'pending',
+    PLANNING:  'planning',
+    EXECUTING: 'executing',
+    WAITING:   'waiting_approval',
+    COMPLETED: 'completed',
+    FAILED:    'failed',
+    CANCELLED: 'cancelled',
+  },
+
   // ── Job States ───────────────────────────────────────────
   JOB_STATUS: {
     QUEUED:       'queued',
