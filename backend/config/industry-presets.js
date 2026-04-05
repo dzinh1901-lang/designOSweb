@@ -463,12 +463,140 @@ const LUXURY_BRANDING_PRESETS = {
 };
 
 // ════════════════════════════════════════════════════════════
+// INDUSTRY: ANIME CINEMATIC
+// Visual language: Expressive anime-realism hybrid, warm amber
+// studio lighting, SSS skin, clean line art, magical VFX,
+// glowing strokes, particle trails, triptych panel reveals.
+// Reference sequence: "The Creator" — 5-scene narrative short
+// ════════════════════════════════════════════════════════════
+const ANIME_CINEMATIC_PRESETS = {
+
+  the_creator_sequence: {
+    id:          'the_creator_sequence',
+    name:        'The Creator — 5-Scene Narrative Short',
+    description: 'Full 34s narrative anime-cinematic sequence: portrait → drawing → sketch-refine → triptych morph → hero reveal',
+    industry:    'anime_cinematic',
+    render_mode: 'cinema',
+
+    prompt_template: 'Anime woman {character_description} in {setting}, {action}, {lighting_description}, {style_tags}',
+    prompt_variables: {
+      character_description: ['young creative artist', 'expressive anime woman', 'digital creator'],
+      setting:               ['dim creative studio', 'warm amber art studio', 'dark gallery space'],
+      action:                ['drawing glowing strokes in air', 'creating luminous line art', 'bringing art to life'],
+      lighting_description:  ['warm golden key light front-right, cool rim left', 'warm amber 3200K, volumetric rays'],
+      style_tags:            ['expressive anime-realism, clean line art, warm romantic tone'],
+    },
+
+    kling_system_prompt: `Expressive anime-realism hybrid. Warm amber studio. 3200K golden key light. Blue-white rim light. f/1.8-f/4 per shot. Clean line art minimal shading. SSS skin warm pink undertone. Teardrop catchlight. Individual hair strand specular rim. Magical VFX: self-illuminated glowing strokes, particle trails, bloom. Warm romantic tone. Teal-orange color grade. Soft film grain. 4K 24fps. No watermark.`,
+
+    shot_sequence: [
+      {
+        shot_id:        'anime_s01', scene_number: 1, shot_type: 'ECU', focal_mm: 85, duration_s: 5,
+        camera_motion:  'micro_push',
+        kling_prompt:   'extreme close-up anime woman portrait 85mm f/1.8, dim creative studio, warm golden key light, blue-white rim, SSS skin, teardrop catchlight, individual hair strand rim, teal-orange LUT, breathing + hair drift, slow micro push',
+      },
+      {
+        shot_id:        'anime_s02', scene_number: 2, shot_type: 'MS', focal_mm: 50, duration_s: 5,
+        camera_motion:  'orbit_slow',
+        kling_prompt:   'medium shot anime woman drawing glowing strokes in air 50mm f/2.0, self-illuminated white-gold light traces, particle trails scatter, slow orbit left-to-right, dark warm studio, SSS hand skin',
+      },
+      {
+        shot_id:        'anime_s03', scene_number: 3, shot_type: 'CU', focal_mm: 50, duration_s: 5,
+        camera_motion:  'dolly_through',
+        kling_prompt:   'close-up view through floating sketch CU 50mm f/4, rough sketch morphs to clean white vector line art, particles collapse into lines, bright line glow, slow dolly through sketch plane, depth layers',
+      },
+      {
+        shot_id:        'anime_s04', scene_number: 4, shot_type: 'MLS', focal_mm: 24, duration_s: 9,
+        camera_motion:  'pan_tilt_right',
+        kling_prompt:   'wide cinematic MLS 24mm f/5.6, three floating self-illuminated art panels triptych, rough sketch LEFT watercolor CENTRE final render RIGHT, particle flow between panels, god ray shafts upper-right, slow pan across, dark warm amber room 2800K',
+      },
+      {
+        shot_id:        'anime_s05', scene_number: 5, shot_type: 'MLS', focal_mm: 35, duration_s: 10,
+        camera_motion:  'dolly_back',
+        kling_prompt:   'hero shot MLS 35mm f/4, slow pull-back reveals anime woman and floating glowing artwork, eye reflection of artwork visible, particles fade as embers, god ray shafts, sacred quiet atmosphere, warm 3200K + 4500K god ray, teal-orange LUT',
+      },
+    ],
+
+    color_profile_id:    'tungsten_warm',
+    lighting_rig_id:     'golden_hour_rim',
+    lut_name:            'DOS_TungstenWarm_v1',
+    color_temp_k:        3200,
+    post_fx_id:          'anime_cinematic',
+    sss_enabled:         true,
+    hair_strand_detail:  true,
+    volumetric_light:    true,
+    god_rays:            true,
+    dust_particles:      false,
+    bloom:               true,
+    film_grain:          0.10,
+    audio_mood:          'wonder',
+    suno_style:          'intimate piano intro, magical shimmer arpeggios, gentle orchestral swell, warm resolving piano outro, anime cinematic score, wonder and creativity',
+
+    quality_targets: { clip_similarity_min: 0.76, temporal_stability: 0.90, target_score: 8.5 },
+    tags: ['anime', 'cinematic', 'narrative', 'SSS', 'glowing strokes', 'triptych', 'warm amber'],
+  },
+
+  anime_portrait_hero: {
+    id:          'anime_portrait_hero',
+    name:        'Anime Hero Portrait — ECU Cinematic',
+    description: 'Single hero ECU anime portrait calibrated to benchmark (seq_01 anime-realism style)',
+    industry:    'anime_cinematic',
+    render_mode: 'cinema',
+
+    kling_system_prompt: `Extreme close-up anime-realism portrait. Golden rim back-light upper-right. Cool blue-white rim left. f/1.8 85mm. Razor focus eye plane. Circular bokeh. SSS skin warm pink. Individual hair strand specular. Teardrop catchlight. Warm amber 3200K. Teal-orange LUT. Micro push. Expressive anime clean line art style. Broadcast quality.`,
+
+    shot_sequence: [
+      {
+        shot_id:      'ahp_s01', shot_type: 'ECU', focal_mm: 85, camera_motion: 'micro_push', duration_s: 5,
+        kling_prompt: 'extreme close-up anime woman portrait 85mm f/1.8, golden rim back-light upper-right, cool blue-white rim left, SSS skin pink glow, teardrop catchlight, individual hair strand specular, circular bokeh amber orbs, slow micro push, warm amber 3200K, teal-orange LUT, expressive anime clean line art, broadcast quality',
+      },
+    ],
+
+    color_profile_id:   'tungsten_warm',
+    lut_name:           'DOS_TungstenWarm_v1',
+    sss_enabled:        true,
+    hair_strand_detail: true,
+    quality_targets:    { target_score: 8.5 },
+    tags:               ['anime', 'portrait', 'ECU', 'SSS', 'hero shot'],
+  },
+
+  anime_vfx_magic: {
+    id:          'anime_vfx_magic',
+    name:        'Anime Magical VFX — Glowing Strokes',
+    description: 'Magical self-illuminated glowing stroke VFX sequence (seq_07/seq_10 anime style)',
+    industry:    'anime_cinematic',
+    render_mode: 'cinema',
+
+    kling_system_prompt: `Anime magical VFX sequence. Self-illuminated white-gold glowing strokes. Particle trails. Warm amber studio background. Bloom on light sources. Clean anime line art style. Physically accurate hand anatomy with SSS skin. Dark warm studio. Warm 3200K ambient. Broadcast quality.`,
+
+    shot_sequence: [
+      {
+        shot_id:      'vfx_s01', shot_type: 'MS', focal_mm: 50, camera_motion: 'static', duration_s: 5,
+        kling_prompt: 'anime woman drawing glowing strokes in midair 50mm f/2.0, white-gold luminous light traces floating, warm particle trails scatter, bloom, dark warm studio 3200K, SSS hand skin, expressive anime style',
+      },
+      {
+        shot_id:      'vfx_s02', shot_type: 'INSERT', focal_mm: 85, camera_motion: 'static', duration_s: 5,
+        kling_prompt: 'close-up anime hand fingertip, white energy discharge VFX, particle sparks scatter, self-illuminated light, SSS skin knuckle, dark warm amber studio, 85mm f/2.0, magical energy detail, anime style',
+      },
+    ],
+
+    color_profile_id: 'tungsten_warm',
+    lut_name:         'DOS_TungstenWarm_v1',
+    sss_enabled:      true,
+    bloom:            true,
+    quality_targets:  { target_score: 8.0 },
+    tags:             ['anime', 'VFX', 'magic', 'glowing', 'particles'],
+  },
+};
+
+// ════════════════════════════════════════════════════════════
 // MASTER PRESET REGISTRY
 // ════════════════════════════════════════════════════════════
 const INDUSTRY_PRESETS = Object.freeze({
   commercial_real_estate: COMMERCIAL_REAL_ESTATE_PRESETS,
   maritime:               MARITIME_PRESETS,
   luxury_branding:        LUXURY_BRANDING_PRESETS,
+  anime_cinematic:        ANIME_CINEMATIC_PRESETS,
 });
 
 // ── Helper functions ──────────────────────────────────────
@@ -520,6 +648,12 @@ function resolvePresetFromScene(scene) {
     if (scene.special_requirements?.some(r => r.includes('panel') || r.includes('triptych'))) return 'bespoke_configurator';
     if (scene.subjects?.some(s => s.type === 'product')) return 'product_reveal_touch';
     return 'perfume_brand_film';
+  }
+  if (industry === 'anime_cinematic') {
+    const isNarrative = scene.subjects?.some(s => s.type === 'anime_character') && scene.shot_sequence?.length >= 3;
+    if (isNarrative) return 'the_creator_sequence';
+    if (scene.special_requirements?.some(r => r.includes('vfx') || r.includes('magic'))) return 'anime_vfx_magic';
+    return 'anime_portrait_hero';
   }
   return null;
 }

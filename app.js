@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════
-   DESIGNOS · BLUEBIRD v1.5 · AUTONOMOUS CINEMATIC ENGINE
-   app.js — interactions, animations, canvas
+   DESIGNOS · BLUEBIRD v1.5 · CINEMATIC GENERATION ENGINE
+   Marine & Real Estate · app.js — interactions, animations, canvas
 ══════════════════════════════════════════════════════════════ */
 
 const html = document.documentElement;
@@ -591,9 +591,331 @@ document.querySelectorAll('.qa-score-card').forEach(el => qaBarObs.observe(el));
   renderPrompt();
 })();
 
+// ══════════════════════════════════════════════════════════════
+// STORYBOARD VIEWER — 5-scene marine/real estate cinematic sequence
+// "Superyacht at Dusk" — interactive scene navigator
+// ══════════════════════════════════════════════════════════════
+(function storyboardViewer() {
+  const SCENES = [
+    {
+      badge:      'Scene 01 / 05',
+      title:      'Superyacht at Dusk — Aerial Establish',
+      desc:       'Wide aerial establishing shot of a 55m superyacht underway at golden hour, warm amber ocean horizon, atmospheric coastal haze. Slow crane upward reveals the full vessel against a dramatic sunset sky. Maritime LoRA physics-accurate water reflections.',
+      duration:   '5s · 120 frames',
+      shot:       'XWS · 24mm · f/7.1',
+      lut:        'DOS_MaritimeDaylight_v1',
+      score:      '8.5 / 10',
+      camMotion:  'Crane Up',
+      signals:    { sss: true, hair: true, vol: true, god: false, bloom: true, id: false },
+      prompt:     'luxury superyacht 55m motor yacht underway open ocean golden hour dusk, XWS aerial establishing shot 24mm f/7.1, warm amber golden light 3400K coastal sunset, physics-accurate ocean wave reflections maritime LoRA, atmospheric horizon haze, dramatic sky warm gradients, slow crane upward reveal full vessel, broadcast quality cinematic photorealistic, no people on deck, deep focus f/7.1...',
+    },
+    {
+      badge:      'Scene 02 / 05',
+      title:      'Beam Profile — Port Tracking Shot',
+      desc:       'Cinematic tracking shot from a chase vessel at beam level. The superyacht moves gracefully through the frame, warm amber light catching the hull polish, teak deck detail sharp in the foreground. Maritime LoRA prevents jelly-water artifacts.',
+      duration:   '5s · 120 frames',
+      shot:       'XWS · 50mm · f/4.0',
+      lut:        'DOS_MaritimeDaylight_v1',
+      score:      '8.0 / 10',
+      camMotion:  'Tracking Left',
+      signals:    { sss: false, hair: false, vol: true, god: false, bloom: true, id: true },
+      prompt:     'luxury superyacht beam profile tracking shot at water level 50mm f/4, slow cinematic tracking left to right, vessel underway calm ocean golden hour, warm amber hull reflection in water, teak deck detail sharp, stainless steel fittings gleam, atmospheric sea spray haze, physics-accurate wave simulation maritime LoRA, warm 3400K coastal light, photorealistic broadcast quality...',
+    },
+    {
+      badge:      'Scene 03 / 05',
+      title:      'Teak Deck Detail — ECU Insert',
+      desc:       'Extreme close-up insert shot of premium teak decking, brushed stainless hardware, and polished hull surface. Warm afternoon rim light catches material detail. Shallow depth of field with cinematic bokeh on ocean background.',
+      duration:   '5s · 120 frames',
+      shot:       'ECU · 85mm · f/1.4',
+      lut:        'DOS_TungstenWarm_v1',
+      score:      '8.0 / 10',
+      camMotion:  'Static',
+      signals:    { sss: false, hair: false, vol: false, god: false, bloom: true, id: false },
+      prompt:     'extreme close up luxury yacht teak deck ECU 85mm f/1.4, premium teak wood grain warm golden light, brushed 316L marine grade stainless steel cleats fittings, polished chrome highlights, warm afternoon rim light upper-right, razor shallow DOF f/1.4 bokeh ocean background, premium materials surface detail, micro-imperfection texture realism, warm amber 3200K, broadcast quality cinematic...',
+    },
+    {
+      badge:      'Scene 04 / 05',
+      title:      'Main Salon Interior — God Ray Reveal',
+      desc:       'Luxury main salon interior reveal. Warm porthole light shafts cascade across burled walnut panelling and cream leather seating. Sacred volumetric atmosphere with dust particles in golden light beams. Slow dolly forward into the space.',
+      duration:   '9s · 216 frames',
+      shot:       'MLS · 24mm · f/5.6',
+      lut:        'DOS_SacredVolumetric_v1',
+      score:      '8.5 / 10',
+      camMotion:  'Dolly In',
+      signals:    { sss: false, hair: false, vol: true, god: true, bloom: true, id: true },
+      prompt:     'luxury superyacht main salon interior MLS 24mm f/5.6, warm porthole afternoon light shafts 3200K, burled walnut panelling dark warm, cream leather seating, god ray light shafts from port portholes upper right, dust particles floating in golden light beams, sacred atmosphere, slow dolly forward into space, premium marine finishes, warm teal-orange LUT, DOS_SacredVolumetric_v1, cinematic broadcast quality...',
+    },
+    {
+      badge:      'Scene 05 / 05',
+      title:      'Hero Aerial — Horizon Pull-Back',
+      desc:       'Final hero shot: slow crane upward aerial pull-back reveals the full vessel against a vast ocean horizon at golden hour. The perfect establishing close to a cinematic vessel production.',
+      duration:   '10s · 240 frames',
+      shot:       'XWS · 16mm · f/11',
+      lut:        'DOS_MaritimeDaylight_v1',
+      score:      '9.0 / 10',
+      camMotion:  'Crane Up + Dolly Back',
+      signals:    { sss: false, hair: false, vol: true, god: true, bloom: true, id: true },
+      prompt:     'hero aerial cinematic shot superyacht open ocean XWS 16mm f/11, slow crane upward and dolly back reveals full vessel against vast ocean horizon, golden hour warm amber 3400K, epic sky warm gradients, physics-accurate ocean surface maritime LoRA, atmospheric coastal haze god rays from horizon, vessel silhouette against dramatic sunset, broadcast quality cinematic photorealistic, warm romantic tone...',
+    },
+  ];
+
+  const SIG_KEYS   = ['sss', 'hair', 'vol', 'god', 'bloom', 'id'];
+  const SIG_LABELS = { sss: 'Maritime LoRA', hair: 'Ocean Physics', vol: 'Vol. Haze', god: 'God Rays', bloom: 'Golden Hour', id: 'Interior Lock' };
+
+  let currentScene = 0;
+
+  const tl       = document.querySelectorAll('.sbt-scene');
+  const frames   = document.querySelectorAll('.sb-vis-frame');
+  const pdots    = document.querySelectorAll('.sb-pdot');
+  const prevBtn  = document.getElementById('sbPrev');
+  const nextBtn  = document.getElementById('sbNext');
+
+  if (!tl.length) return;
+
+  function updateScene(idx) {
+    currentScene = idx;
+    const s = SCENES[idx];
+
+    // Timeline
+    tl.forEach((t, i) => t.classList.toggle('active', i === idx));
+    // Frames
+    frames.forEach((f, i) => f.classList.toggle('active', i === idx));
+    // Progress dots
+    pdots.forEach((d, i) => d.classList.toggle('active', i === idx));
+
+    // Text fields
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setText('sbSceneBadge', s.badge);
+    setText('sbSceneTitle', s.title);
+    setText('sbSceneDesc',  s.desc);
+    setText('sbDuration',   s.duration);
+    setText('sbShot',       s.shot);
+    setText('sbLut',        s.lut);
+    setText('sbScore',      s.score);
+    setText('sbCamText',    s.camMotion);
+    setText('sbPromptText', s.prompt);
+
+    // Score colour
+    const scoreEl = document.getElementById('sbScore');
+    if (scoreEl) {
+      const num = parseFloat(s.score);
+      scoreEl.style.color = num >= 9 ? '#FFD700' : 'var(--rose)';
+    }
+
+    // Quality signals
+    SIG_KEYS.forEach(key => {
+      const el = document.getElementById(`sbSig_${key}`);
+      if (el) {
+        const on = s.signals[key];
+        el.className = `sb-sig ${on ? 'on' : 'off'}`;
+        el.textContent = SIG_LABELS[key];
+      }
+    });
+
+    // Navigation buttons
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === SCENES.length - 1;
+  }
+
+  // Timeline click
+  tl.forEach((dot, i) => dot.addEventListener('click', () => updateScene(i)));
+
+  // Arrow buttons
+  prevBtn?.addEventListener('click', () => { if (currentScene > 0) updateScene(currentScene - 1); });
+  nextBtn?.addEventListener('click', () => { if (currentScene < SCENES.length - 1) updateScene(currentScene + 1); });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    const sb = document.getElementById('storyboard');
+    if (!sb) return;
+    const rect = sb.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!inView) return;
+    if (e.key === 'ArrowRight' && currentScene < SCENES.length - 1) updateScene(currentScene + 1);
+    if (e.key === 'ArrowLeft'  && currentScene > 0)                 updateScene(currentScene - 1);
+  });
+
+  // Initialise
+  updateScene(0);
+})();
+
+// ══════════════════════════════════════════════════════════════
+// SCALABILITY ARCHITECTURE — animated counters on scroll
+// ══════════════════════════════════════════════════════════════
+(function scaleAnimations() {
+  const metrics = document.querySelectorAll('.sc-met-val');
+  if (!metrics.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      // Subtle scale-in for feature cards
+      entry.target.closest('.sc-feat-card')?.classList.add('visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.sc-feat-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(16px)';
+    const inner = card.querySelector('h4') || card;
+    observer.observe(inner);
+  });
+
+  const featObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      featObs.unobserve(entry.target);
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.sc-feat-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 60}ms`;
+    featObs.observe(card);
+  });
+
+  // Architecture node hover highlight effect
+  document.querySelectorAll('.sc-node').forEach(node => {
+    node.addEventListener('mouseenter', () => {
+      node.style.background = 'rgba(240,144,144,0.05)';
+    });
+    node.addEventListener('mouseleave', () => {
+      node.style.background = '';
+    });
+  });
+})();
+
+// ══════════════════════════════════════════════════════════════
+// AI INTELLIGENCE LIVE FEED — v1.3.0
+// Simulates the Perceive→Reason→Act→Learn quality loop in the browser
+// ══════════════════════════════════════════════════════════════
+(function initAgenticFeed() {
+  const feed       = document.getElementById('agLiveFeed');
+  const healthEl   = document.getElementById('agHealthScore');
+  if (!feed) return;
+
+  // Mock system state (in production: SSE from /api/v1/admin/agentic/status)
+  const systemState = {
+    healthScore: 0.982,
+    qaScore: 8.5,
+    queueDepth: 0,
+    cdnLatencyMs: 42,
+    costPerJob: 0.62,
+    adaptations: 0,
+    episodes: 0,
+  };
+
+  const ADAPTATION_SCENARIOS = [
+    { type: 'PERCEIVE', badge: 'info', cls: 'ag-feed-info',
+      texts: [
+        () => `QA score ${(systemState.qaScore).toFixed(1)}/10 · Queue ${systemState.queueDepth} · CDN ${systemState.cdnLatencyMs}ms · Health ${(systemState.healthScore * 100).toFixed(1)}%`,
+        () => `Marine & real estate pipelines nominal — Kling API healthy · Cost $${systemState.costPerJob.toFixed(2)}/job · 0 HITL alerts`,
+      ] },
+    { type: 'REASON', badge: 'nominal', cls: 'ag-feed-nominal',
+      texts: [
+        () => `Quality loop: ${systemState.queueDepth} issues detected. System health ${(systemState.healthScore*100).toFixed(1)}% — no critical adaptation needed.`,
+        () => 'Policy check: best known strategies loaded. Thresholds nominal across all 5 quality signal types.',
+      ] },
+    { type: 'ACT', badge: 'act', cls: 'ag-feed-act',
+      texts: [
+        () => 'Proactive: Maritime LoRA + volumetric benchmark anchors injected into all active Kling prompts.',
+        () => 'Proactive: CDN cache TTL extended for static assets. Geo-routing verified optimal.',
+        () => `Smart batching enabled — ${systemState.adaptations + 1} cost-savings cycles completed.`,
+      ],
+      onFire: () => {
+        systemState.adaptations++;
+        systemState.costPerJob = Math.max(0.42, systemState.costPerJob - 0.04);
+        systemState.qaScore    = Math.min(9.2, systemState.qaScore + 0.05);
+      } },
+    { type: 'LEARN', badge: 'learn', cls: 'ag-feed-success',
+      texts: [
+        () => `Episode ${systemState.episodes + 1} stored — policy weights updated. Prompt enrichment success rate: 94%.`,
+        () => `Learned: QA improvement ${(systemState.qaScore).toFixed(1)}/10 after benchmark anchor injection. Retaining strategy.`,
+      ],
+      onFire: () => { systemState.episodes++; } },
+  ];
+
+  function formatTime(d) {
+    const m = String(d.getMinutes()).padStart(2, '0');
+    const s = String(d.getSeconds()).padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function appendFeedItem(type, badge, cls, text) {
+    const item = document.createElement('div');
+    item.className = `ag-feed-item ${cls}`;
+    item.innerHTML = `
+      <span class="ag-feed-time">${formatTime(new Date())}</span>
+      <span class="ag-feed-badge ${badge}">${type}</span>
+      <span class="ag-feed-text">${text}</span>`;
+    feed.insertBefore(item, feed.firstChild);
+    // Keep max 12 items
+    while (feed.children.length > 12) feed.removeChild(feed.lastChild);
+  }
+
+  function runFeedCycle() {
+    // Simulate slight fluctuations
+    systemState.queueDepth   = Math.max(0, systemState.queueDepth + Math.floor(Math.random() * 5 - 2));
+    systemState.cdnLatencyMs = Math.max(28, systemState.cdnLatencyMs + Math.floor(Math.random() * 20 - 10));
+    systemState.healthScore  = Math.min(0.999, Math.max(0.92, systemState.healthScore + (Math.random() - 0.5) * 0.01));
+
+    // Update health badge
+    const pct = (systemState.healthScore * 100).toFixed(1);
+    if (healthEl) {
+      healthEl.textContent = pct + '%';
+      healthEl.style.color = systemState.healthScore > 0.95 ? '#4caf7d'
+        : systemState.healthScore > 0.85 ? '#f5a623' : '#c43a4a';
+    }
+
+    // Pick scenario: weighted toward PERCEIVE + REASON (more common)
+    const roll = Math.random();
+    let scenario;
+    if (roll < 0.40)      scenario = ADAPTATION_SCENARIOS[0]; // PERCEIVE
+    else if (roll < 0.70) scenario = ADAPTATION_SCENARIOS[1]; // REASON
+    else if (roll < 0.90) scenario = ADAPTATION_SCENARIOS[2]; // ACT
+    else                   scenario = ADAPTATION_SCENARIOS[3]; // LEARN
+
+    const texts = scenario.texts;
+    const text  = texts[Math.floor(Math.random() * texts.length)]();
+    if (scenario.onFire) scenario.onFire();
+
+    appendFeedItem(scenario.type, scenario.badge, scenario.cls, text);
+  }
+
+  // Run first cycle after 3s, then every 8s
+  setTimeout(runFeedCycle, 3000);
+  setInterval(runFeedCycle, 8000);
+
+  // Animate strategy cards entrance on scroll
+  const stratCards = document.querySelectorAll('.ag-strategy-card, .ag-loop-card');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    stratCards.forEach((c, i) => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(20px)';
+      c.style.transition = `opacity 0.5s ${i * 0.07}s, transform 0.5s ${i * 0.07}s`;
+      io.observe(c);
+    });
+  }
+})();
+
 // ── Console brand ─────────────────────────────────────────────
 console.log(
-  '%c DesignOS · Bluebird v1.5 ',
+  '%c DesignOS · Bluebird v1.7 ',
   'background:#F09090;color:#fff;padding:4px 12px;border-radius:4px;font-weight:700;',
-  '\nAutonomous Cinematic Generation Engine\nPowered by Kling 3.0 + Genspark AI · Ready\nBenchmark calibrated: hf_20260322_125816 · 8.5/10 composite'
+  '\nCinematic Generation Engine · Marine & Real Estate\nPowered by Kling 3.0 + Genspark AI · Ready',
+  '\nBenchmark calibrated: hf_20260322_125816 · 8.5/10 composite',
+  '\n"Superyacht at Dusk" · 5-Scene Marine Sequence · v1.3.0',
+  '\nAI Intelligence L3: Perceive→Reason→Act→Learn · v1.3.0'
 );

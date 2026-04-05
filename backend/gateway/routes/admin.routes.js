@@ -13,6 +13,7 @@
 const router      = require('express').Router();
 const { authenticate, requireRole } = require('../../shared/middleware/auth.middleware');
 const queueService = require('../../services/queue/queue.service');
+const agenticAutonomy = require('../../services/agentic/agentic-autonomy.service');
 const { body, param, query } = require('express-validator');
 const { validate } = require('../../shared/validators/schemas');
 const { HTTP, ROLES } = require('../../config/constants');
@@ -164,6 +165,57 @@ router.post(
         message:   'DLQ flush queued (implement Kafka admin client)',
         requestId: req.requestId,
       });
+    } catch (err) { next(err); }
+  }
+);
+
+// ════════════════════════════════════════════════════════════
+//  AGENTIC AUTONOMY ADMIN ROUTES (v1.3.0)
+// ════════════════════════════════════════════════════════════
+
+// ── GET /admin/agentic/status ─────────────────────────────
+router.get(
+  '/agentic/status',
+  async (req, res, next) => {
+    try {
+      const status = agenticAutonomy.getStatus();
+      res.status(HTTP.OK).json({ ...status, requestId: req.requestId });
+    } catch (err) { next(err); }
+  }
+);
+
+// ── GET /admin/agentic/adaptations ────────────────────────
+router.get(
+  '/agentic/adaptations',
+  async (req, res, next) => {
+    try {
+      const log = agenticAutonomy.getAdaptationLog();
+      res.status(HTTP.OK).json({ adaptations: log, count: log.length, requestId: req.requestId });
+    } catch (err) { next(err); }
+  }
+);
+
+// ── GET /admin/agentic/memory ─────────────────────────────
+router.get(
+  '/agentic/memory',
+  [query('limit').optional().isInt({ min: 1, max: 100 }).toInt(), validate],
+  async (req, res, next) => {
+    try {
+      const episodes = agenticAutonomy.getEpisodicMemory(req.query.limit || 10);
+      res.status(HTTP.OK).json({ episodes, count: episodes.length, requestId: req.requestId });
+    } catch (err) { next(err); }
+  }
+);
+
+// ── POST /admin/agentic/trigger ────────────────────────────
+// Manually trigger a full Perceive→Reason→Act→Learn cycle
+router.post(
+  '/agentic/trigger',
+  async (req, res, next) => {
+    try {
+      logger.info('Admin: manual agentic cycle triggered', { adminId: req.user.id });
+      const result = await agenticAutonomy.triggerManualCycle();
+      res.status(HTTP.OK).json({ ...result, requestId: req.requestId });
     } catch (err) { next(err); }
   }
 );
