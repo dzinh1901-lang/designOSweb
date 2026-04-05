@@ -40,11 +40,22 @@ const queueService   = require('../services/queue/queue.service');
 const storageService = require('../services/storage/storage.service');
 
 // Routes
-const authRoutes     = require('./routes/auth.routes');
-const projectRoutes  = require('./routes/projects.routes');
-const generateRoutes = require('./routes/generate.routes');
-const adminRoutes    = require('./routes/admin.routes');
-const uploadRoutes   = require('./routes/upload.routes');
+const authRoutes        = require('./routes/auth.routes');
+const projectRoutes     = require('./routes/projects.routes');
+const generateRoutes    = require('./routes/generate.routes');
+const adminRoutes       = require('./routes/admin.routes');
+const uploadRoutes      = require('./routes/upload.routes');
+const tasksRoutes       = require('./routes/tasks.routes');
+const coordinatorRoutes = require('./routes/coordinator.routes');
+
+// MCP servers (register tools before routes are mounted)
+const projectsMcpServer    = require('../mcp-servers/projects.server');
+const generationMcpServer  = require('../mcp-servers/generation.server');
+const assetsMcpServer      = require('../mcp-servers/assets.server');
+const analyticsMcpServer   = require('../mcp-servers/analytics.server');
+
+// Coordinator orchestrator
+const coordinator = require('../coordinator/coordinator.orchestrator');
 
 const { API_PREFIX, HEALTH_PATH } = require('../config/constants');
 
@@ -218,6 +229,8 @@ function buildApp(redis) {
   app.use(`${API_PREFIX}/generate`, generateRoutes);
   app.use(`${API_PREFIX}/upload`,   uploadRoutes);
   app.use(`${API_PREFIX}/admin`,    adminRoutes);
+  app.use(`${API_PREFIX}/tasks`,    tasksRoutes);
+  app.use(`${API_PREFIX}/mcp`,      coordinatorRoutes);
 
   // ── Static frontend serving ───────────────────────────
   // Serve the webapp frontend (index.html, login.html, dashboard.html, etc.)
@@ -302,6 +315,13 @@ async function bootstrap() {
   storageService.init();
   setRedisClient(redis);
 
+  // Register MCP tool servers (before routes are live)
+  projectsMcpServer.register();
+  generationMcpServer.register();
+  assetsMcpServer.register();
+  analyticsMcpServer.register();
+  logger.info('MCP tool servers registered');
+
   // 4. Configure Firestore if credentials provided
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.FIRESTORE_PROJECT_ID) {
     try {
@@ -309,6 +329,7 @@ async function bootstrap() {
       const db = new Firestore({ projectId: process.env.FIRESTORE_PROJECT_ID });
       authService.init(redis, db);
       projectService.init(db, redis);
+      coordinator.init(db);
       logger.info('Firestore connected', { project: process.env.FIRESTORE_PROJECT_ID });
     } catch (err) {
       logger.warn('Firestore init failed', { error: err.message });
