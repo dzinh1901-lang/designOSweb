@@ -42,7 +42,7 @@ prometheus-client==0.21.0
 structlog==24.4.0
 
 # ── Image processing (for QA optical flow) ────────────────
-Pillow==11.0.0
+Pillow==12.2.0
 
 # ── Dev / testing ─────────────────────────────────────────
 pytest==8.3.4
